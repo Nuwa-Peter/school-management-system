@@ -23,12 +23,17 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $gender = fake()->randomElement(['Male', 'Female']);
         return [
-            'name' => fake()->name(),
+            'first_name' => fake()->firstName($gender),
+            'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => \App\Enums\Role::STUDENT, // Default to student
+            'gender' => $gender,
+            'status' => 'active',
         ];
     }
 
