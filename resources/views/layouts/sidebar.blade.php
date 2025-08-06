@@ -1,7 +1,8 @@
 <aside class="w-64 bg-gray-800 text-white min-h-screen p-4">
-    <div class="mb-10">
+    <div class="mb-10 text-center">
         <a href="{{ route('dashboard') }}">
-            <x-application-logo class="block h-9 w-auto fill-current text-white" />
+            <img src="{{ asset('images/logo.png') }}" alt="School Logo" class="w-20 h-20 mx-auto mb-2 rounded-full">
+            <h1 class="text-xl font-bold text-white">St. Joseph's VSS</h1>
         </a>
     </div>
     <nav>
