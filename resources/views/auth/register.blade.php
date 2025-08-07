@@ -16,6 +16,13 @@
             <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
         </div>
 
+        <!-- Other Name -->
+        <div class="mt-4">
+            <x-input-label for="other_name" :value="__('Other Name (Optional)')" />
+            <x-text-input id="other_name" class="block mt-1 w-full" type="text" name="other_name" :value="old('other_name')" autocomplete="additional-name" />
+            <x-input-error :messages="$errors->get('other_name')" class="mt-2" />
+        </div>
+
         <!-- Gender -->
         <div class="mt-4">
             <x-input-label for="gender" :value="__('Gender')" />

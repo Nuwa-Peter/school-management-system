@@ -19,6 +19,38 @@
                     <span>User Management</span>
                 </a>
             </li>
+            <li class="mb-2">
+                <a href="{{ route('class-levels.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('class-levels.index') ? 'bg-gray-700' : '' }}">
+                    <x-heroicon-o-academic-cap class="w-6 h-6 mr-3" />
+                    <span>Classes & Streams</span>
+                </a>
+            </li>
+            <li class="mb-2">
+                <a href="{{ route('subjects.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('subjects.index') ? 'bg-gray-700' : '' }}">
+                    <x-heroicon-o-book-open class="w-6 h-6 mr-3" />
+                    <span>Subjects</span>
+                </a>
+            </li>
+            <li class="mb-2">
+                <a href="{{ route('teacher-assignments.create') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('teacher-assignments.create') ? 'bg-gray-700' : '' }}">
+                    <x-heroicon-o-user-plus class="w-6 h-6 mr-3" />
+                    <span>Assign Teachers</span>
+                </a>
+            </li>
+            <li class="mb-2">
+                <a href="{{ route('student-assignments.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('student-assignments.index') ? 'bg-gray-700' : '' }}">
+                    <x-heroicon-o-user-group class="w-6 h-6 mr-3" />
+                    <span>Assign Students</span>
+                </a>
+            </li>
+            @if(Auth::user()->role === \App\Enums\Role::TEACHER)
+            <li class="mb-2">
+                <a href="{{ route('marks.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('marks.index') ? 'bg-gray-700' : '' }}">
+                    <x-heroicon-o-pencil-square class="w-6 h-6 mr-3" />
+                    <span>Mark Entry</span>
+                </a>
+            </li>
+            @endif
             <!-- More links will be added here -->
         </ul>
     </nav>
