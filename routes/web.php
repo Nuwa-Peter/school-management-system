@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ClassLevelController;
+use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\MarkController;
 use App\Http\Controllers\PaperController;
 use App\Http\Controllers\ProfileController;
@@ -10,6 +12,8 @@ use App\Http\Controllers\StreamController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherAssignmentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VideoController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -53,9 +57,9 @@ Route::middleware('auth')->group(function () {
     Route::post('teacher-assignments', [TeacherAssignmentController::class, 'store'])->name('teacher-assignments.store')->middleware('role:root,headteacher');
 
     // Mark Entry
-    Route::get('marks', [MarkController::class, 'index'])->name('marks.index')->middleware('role:teacher');
-    Route::get('marks/enter/{paper_stream_user_id}', [MarkController::class, 'enter'])->name('marks.enter')->middleware('role:teacher');
-    Route::post('marks', [MarkController::class, 'store'])->name('marks.store')->middleware('role:teacher');
+    Route::get('marks', [MarkController::class, 'index'])->name('marks.index')->middleware('role:teacher,headteacher');
+    Route::get('marks/enter/{paper_stream_user_id}', [MarkController::class, 'enter'])->name('marks.enter')->middleware('role:teacher,headteacher');
+    Route::post('marks', [MarkController::class, 'store'])->name('marks.store')->middleware('role:teacher,headteacher');
 
     // Student Assignment
     Route::get('student-assignments', [StudentAssignmentController::class, 'index'])->name('student-assignments.index')->middleware('role:root,headteacher');
@@ -72,6 +76,24 @@ Route::middleware('auth')->group(function () {
     Route::get('students/template', [StudentController::class, 'downloadTemplate'])->name('students.template')->middleware('role:root,headteacher');
     Route::get('students/{user}/streams/{stream}/report-card', [StudentController::class, 'generateReportCard'])->name('students.report-card')->middleware('role:root,headteacher');
     Route::get('students/{user}/id-card', [StudentController::class, 'generateIdCard'])->name('students.id-card')->middleware('role:root,headteacher');
+
+    // Communication
+    Route::get('communications/create', [CommunicationController::class, 'create'])->name('communications.create')->middleware('role:root,headteacher');
+    Route::post('communications', [CommunicationController::class, 'send'])->name('communications.send')->middleware('role:root,headteacher');
+
+    // Attendance
+    Route::get('attendance/qrcode', [AttendanceController::class, 'showQrCode'])->name('attendance.qrcode')->middleware('role:root,headteacher');
+    Route::post('attendance/scan', [AttendanceController::class, 'scan'])->name('attendance.scan')->middleware('auth');
+    Route::get('attendance/records', [AttendanceController::class, 'records'])->name('attendance.records')->middleware('role:root,headteacher,bursar');
+
+    // Video Content
+    Route::get('videos', [VideoController::class, 'index'])->name('videos.index')->middleware('role:student,teacher');
+    Route::get('videos/upload', [VideoController::class, 'create'])->name('videos.create')->middleware('role:teacher');
+    Route::post('videos', [VideoController::class, 'store'])->name('videos.store')->middleware('role:teacher');
+
+    // Teacher Chat
+    Route::get('teacher/chat', [ChatController::class, 'index'])->name('teacher.chat.index');
+    Route::post('teacher/chat/send', [ChatController::class, 'sendMessage'])->name('teacher.chat.send');
 });
 
 require __DIR__.'/auth.php';

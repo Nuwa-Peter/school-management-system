@@ -15,7 +15,7 @@ class TeacherAssignmentController extends Controller
 {
     public function create(): View
     {
-        $teachers = User::where('role', Role::TEACHER)->orderBy('first_name')->get();
+        $teachers = User::whereIn('role', [Role::TEACHER, Role::HEADTEACHER])->orderBy('first_name')->get();
         $streams = Stream::with('classLevel')->get();
         $papers = Paper::with('subject')->get();
 

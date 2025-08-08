@@ -29,4 +29,9 @@ class Stream extends Model
     {
         return $this->belongsToMany(User::class, 'stream_user');
     }
+
+    public function videos(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Video::class);
+    }
 }

@@ -58,6 +58,38 @@
                 </a>
             </li>
             @endif
+            @if(in_array(\Illuminate\Support\Facades\Auth::user()->role, [\App\Enums\Role::TEACHER, \App\Enums\Role::HEADTEACHER]))
+            <li class="mb-2">
+                <a href="{{ route('teacher.chat.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('teacher.chat.index') ? 'bg-gray-700' : '' }}">
+                    <x-heroicon-o-chat-bubble-left-right class="w-6 h-6 mr-3" />
+                    <span>Teacher Chat</span>
+                </a>
+            </li>
+            @endif
+            <li class="mb-2">
+                <a href="{{ route('videos.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('videos.index') ? 'bg-gray-700' : '' }}">
+                    <x-heroicon-o-video-camera class="w-6 h-6 mr-3" />
+                    <span>Video Library</span>
+                </a>
+            </li>
+            <li class="mb-2">
+                <a href="{{ route('communications.create') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('communications.create') ? 'bg-gray-700' : '' }}">
+                    <x-heroicon-o-chat-bubble-left-right class="w-6 h-6 mr-3" />
+                    <span>Communications</span>
+                </a>
+            </li>
+            <li class="mb-2">
+                <x-sidebar-dropdown :active="request()->routeIs('attendance.*')">
+                    <x-slot name="trigger">
+                        <x-heroicon-o-qr-code class="w-6 h-6 mr-3" />
+                        <span>Attendance</span>
+                    </x-slot>
+                    <x-slot name="content">
+                        <a href="{{ route('attendance.qrcode') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Show QR Code</a>
+                        <a href="{{ route('attendance.records') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">View Records</a>
+                    </x-slot>
+                </x-sidebar-dropdown>
+            </li>
             <!-- More links will be added here -->
         </ul>
     </nav>
