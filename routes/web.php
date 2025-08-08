@@ -5,6 +5,7 @@ use App\Http\Controllers\MarkController;
 use App\Http\Controllers\PaperController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentAssignmentController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherAssignmentController;
 use App\Http\Controllers\UserController;
@@ -54,6 +55,16 @@ Route::middleware('auth')->group(function () {
     // Student Assignment
     Route::get('student-assignments', [StudentAssignmentController::class, 'index'])->name('student-assignments.index')->middleware('role:root,headteacher');
     Route::post('student-assignments', [StudentAssignmentController::class, 'store'])->name('student-assignments.store')->middleware('role:root,headteacher');
+
+    // Student Management
+    Route::get('students', [StudentController::class, 'index'])->name('students.index')->middleware('role:root,headteacher');
+    Route::post('students/{user}/photo', [StudentController::class, 'updatePhoto'])->name('students.photo.update')->middleware('role:root,headteacher');
+    Route::get('students/upload', [StudentController::class, 'showUploadForm'])->name('students.upload.form')->middleware('role:root,headteacher');
+    Route::post('students/upload', [StudentController::class, 'import'])->name('students.import')->middleware('role:root,headteacher');
+    Route::get('students/export/excel', [StudentController::class, 'exportExcel'])->name('students.export.excel')->middleware('role:root,headteacher');
+    Route::get('students/export/pdf', [StudentController::class, 'exportPdf'])->name('students.export.pdf')->middleware('role:root,headteacher');
+    Route::get('students/{user}/streams/{stream}/report-card', [StudentController::class, 'generateReportCard'])->name('students.report-card')->middleware('role:root,headteacher');
+    Route::get('students/{user}/id-card', [StudentController::class, 'generateIdCard'])->name('students.id-card')->middleware('role:root,headteacher');
 });
 
 require __DIR__.'/auth.php';

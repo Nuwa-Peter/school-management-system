@@ -1,0 +1,132 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\Role;
+use App\Models\Stream;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class StudentController extends Controller
+{
+    public function index(Request $request): View
+    {
+        $students = User::where('role', Role::STUDENT)
+            ->when($request->search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('other_name', 'like', "%{$search}%")
+                        ->orWhere('lin', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->stream_id, function ($query, $stream_id) {
+                $query->whereHas('streams', function ($q) use ($stream_id) {
+                    $q->where('streams.id', $stream_id);
+                });
+            })
+            ->orderBy('last_name')
+            ->paginate(20);
+
+        $streams = Stream::with('classLevel')->get();
+
+        return view('students.index', compact('students', 'streams'));
+    }
+
+    public function updatePhoto(Request $request, User $user): \Illuminate\Http\RedirectResponse
+    {
+        $request->validate([
+            'photo_upload' => ['nullable', 'image', 'max:2048'],
+            'photo_data' => ['nullable', 'string'],
+        ]);
+
+        if ($request->hasFile('photo_upload')) {
+            $path = $request->file('photo_upload')->store('photos', 'public');
+            $user->update(['photo' => $path]);
+        } elseif ($request->photo_data) {
+            $img = $request->photo_data;
+            $img = str_replace('data:image/jpeg;base64,', '', $img);
+            $img = str_replace(' ', '+', $img);
+            $data = base64_decode($img);
+            $filename = 'photos/' . uniqid() . '.jpg';
+            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $data);
+            $user->update(['photo' => $filename]);
+        }
+
+        return redirect()->route('students.index')->with('success', 'Photo updated successfully.');
+    }
+
+    public function showUploadForm(): View
+    {
+        return view('students.upload');
+    }
+
+    public function import(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\StudentsImport, $request->file('file'));
+
+        return redirect()->route('students.index')->with('success', 'Students imported successfully.');
+    }
+
+    public function exportExcel()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\StudentsExport, 'students.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        $students = User::where('role', \App\Enums\Role::STUDENT)->orderBy('last_name')->get();
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('students.pdf', compact('students'));
+        return $pdf->download('students.pdf');
+    }
+
+    public function generateReportCard(User $user, Stream $stream)
+    {
+        // Get all subjects for the stream
+        $subjects = $stream->subjects()->with('papers')->get();
+
+        // Get all marks for the student in this stream
+        $marks = \App\Models\Mark::where('user_id', $user->id)
+            ->where('stream_id', $stream->id)
+            ->pluck('score', 'paper_id');
+
+        // This is a placeholder for a real grading system
+        $gradingSystem = [
+            ['min' => 80, 'max' => 100, 'grade' => 'D1'],
+            ['min' => 75, 'max' => 79, 'grade' => 'D2'],
+            // ... and so on
+        ];
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('students.report-card', [
+            'student' => $user,
+            'stream' => $stream,
+            'subjects' => $subjects,
+            'marks' => $marks,
+            'gradingSystem' => $gradingSystem,
+        ]);
+
+        return $pdf->stream('report-card.pdf');
+    }
+
+    public function generateIdCard(User $user)
+    {
+        $issue_date = now()->format('d-m-Y');
+        $expiry_date = now()->addYears(1)->format('d-m-Y');
+
+        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(50)->generate(route('students.id-card', $user));
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('students.id-card', [
+            'student' => $user,
+            'issue_date' => $issue_date,
+            'expiry_date' => $expiry_date,
+            'qrCode' => $qrCode,
+        ]);
+
+        return $pdf->stream('id-card.pdf');
+    }
+}

@@ -34,6 +34,7 @@ class RegisteredUserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'other_name' => ['nullable', 'string', 'max:255'],
             'gender' => ['required', 'string', 'in:Male,Female'],
+            'lin' => ['nullable', 'string', 'max:255', 'unique:users,lin'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -43,6 +44,7 @@ class RegisteredUserController extends Controller
             'last_name' => $request->last_name,
             'other_name' => $request->other_name,
             'gender' => $request->gender,
+            'lin' => $request->lin,
             'email' => $request->email,
             'password' => $request->password, // The model hashes this automatically
             'role' => \App\Enums\Role::STUDENT,

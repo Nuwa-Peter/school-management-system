@@ -14,9 +14,9 @@
                 </a>
             </li>
             <li class="mb-2">
-                <a href="{{ route('users.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('users.index') ? 'bg-gray-700' : '' }}">
+                <a href="{{ route('students.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('students.index') ? 'bg-gray-700' : '' }}">
                     <x-heroicon-o-users class="w-6 h-6 mr-3" />
-                    <span>User Management</span>
+                    <span>Student Management</span>
                 </a>
             </li>
             <li class="mb-2">

@@ -33,6 +33,13 @@
             <x-input-error :messages="$errors->get('gender')" class="mt-2" />
         </div>
 
+        <!-- LIN -->
+        <div class="mt-4">
+            <x-input-label for="lin" :value="__('Learner Identification Number (LIN)')" />
+            <x-text-input id="lin" class="block mt-1 w-full" type="text" name="lin" :value="old('lin')" />
+            <x-input-error :messages="$errors->get('lin')" class="mt-2" />
+        </div>
+
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
