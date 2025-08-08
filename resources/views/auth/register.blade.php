@@ -48,15 +48,37 @@
         </div>
 
         <!-- Password -->
-        <div class="mt-4">
+        <div class="mt-4" x-data="{ password: '', confirmation: '' }">
             <x-input-label for="password" :value="__('Password')" />
 
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
                             name="password"
-                            required autocomplete="new-password" />
+                            required autocomplete="new-password"
+                            x-model="password"
+                            @input="validatePassword" />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
+
+            <!-- Password Strength Indicators -->
+            <div id="password-strength" class="mt-2 text-sm space-y-1">
+                <p id="length" class="text-red-500">Minimum 8 characters</p>
+                <p id="letter" class="text-red-500">At least one letter</p>
+                <p id="symbol" class="text-red-500">At least one symbol or number</p>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mt-4">
+                <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+
+                <x-text-input id="password_confirmation" class="block mt-1 w-full"
+                                type="password"
+                                name="password_confirmation" required autocomplete="new-password"
+                                x-model="confirmation" />
+
+                <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                <p id="match" class="text-red-500 mt-2 text-sm hidden">Passwords do not match</p>
+            </div>
         </div>
 
         <!-- Confirm Password -->
@@ -80,4 +102,52 @@
             </x-primary-button>
         </div>
     </form>
+
+    <script>
+        function validatePassword() {
+            const password = this.password;
+            const confirmation = this.confirmation;
+
+            const length = document.getElementById('length');
+            const letter = document.getElementById('letter');
+            const symbol = document.getElementById('symbol');
+            const match = document.getElementById('match');
+
+            // Length check
+            if (password.length >= 8) {
+                length.classList.remove('text-red-500');
+                length.classList.add('text-green-500');
+            } else {
+                length.classList.add('text-red-500');
+                length.classList.remove('text-green-500');
+            }
+
+            // Letter check
+            if (/[a-zA-Z]/.test(password)) {
+                letter.classList.remove('text-red-500');
+                letter.classList.add('text-green-500');
+            } else {
+                letter.classList.add('text-red-500');
+                letter.classList.remove('text-green-500');
+            }
+
+            // Symbol/Number check
+            if (/[0-9\W]/.test(password)) {
+                symbol.classList.remove('text-red-500');
+                symbol.classList.add('text-green-500');
+            } else {
+                symbol.classList.add('text-red-500');
+                symbol.classList.remove('text-green-500');
+            }
+
+            // Match check
+            if (confirmation) {
+                if (password === confirmation) {
+                    match.classList.add('hidden');
+                } else {
+                    match.classList.remove('hidden');
+                }
+            }
+        }
+    </script>
 </x-guest-layout>

@@ -48,5 +48,35 @@
                 </footer>
             </div>
         </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div x-data="{ show: false, formAction: '' }" x-show="show" x-on:open-delete-modal.window="show = true; formAction = $event.detail.action" style="display: none;" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" x-cloak>
+            <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                        <x-heroicon-o-exclamation-triangle class="h-6 w-6 text-red-600" />
+                    </div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mt-2">Are you sure?</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p class="text-sm text-gray-500">
+                            Do you really want to delete this record? This process cannot be undone.
+                        </p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <form :action="formAction" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
+                                Delete
+                            </button>
+                        </form>
+                        <button @click="show = false" class="ml-4 px-4 py-2 bg-gray-200 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @stack('scripts')
     </body>
 </html>

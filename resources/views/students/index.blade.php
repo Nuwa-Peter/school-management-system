@@ -12,9 +12,14 @@
                     <!-- Search and Filters -->
                     <form action="{{ route('students.index') }}" method="GET" class="mb-6">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div class="md:col-span-2">
+                            <div class="md:col-span-2 relative" x-data="{ open: false, query: '' }">
                                 <x-input-label for="search" :value="__('Search by Name or LIN')" />
-                                <x-text-input id="search" class="block mt-1 w-full" type="text" name="search" :value="request('search')" />
+                                <x-text-input id="search" class="block mt-1 w-full" type="text" name="search" :value="request('search')" x-model="query" @input.debounce.300ms="fetchSuggestions" @focus="open = true" @click.away="open = false"/>
+                                <div x-show="open" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto" x-cloak>
+                                    <ul id="suggestions-list">
+                                        <!-- Suggestions will be populated here -->
+                                    </ul>
+                                </div>
                             </div>
                             <div>
                                 <x-input-label for="stream_id" :value="__('Filter by Stream')" />
@@ -37,10 +42,21 @@
 
                     <!-- Action Buttons -->
                     <div class="mb-4 flex flex-wrap gap-2">
-                        <a href="{{ route('register') }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Add New Student</a>
-                        <a href="{{ route('students.upload.form') }}" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Upload Students (Excel)</a>
-                        <a href="{{ route('students.export.pdf') }}" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Download as PDF</a>
-                        <a href="{{ route('students.export.excel') }}" class="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600">Download as Excel</a>
+                        <a href="{{ route('users.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                            <x-heroicon-o-plus class="w-5 h-5 mr-2"/> Add New Student
+                        </a>
+                        <a href="{{ route('students.upload.form') }}" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                            <x-heroicon-o-arrow-up-tray class="w-5 h-5 mr-2"/> Upload Students (Excel)
+                        </a>
+                        <a href="{{ route('students.template') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+                            <x-heroicon-o-arrow-down-tray class="w-5 h-5 mr-2"/> Download Template
+                        </a>
+                        <a href="{{ route('students.export.pdf') }}" class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                            <x-heroicon-o-document-arrow-down class="w-5 h-5 mr-2"/> Download as PDF
+                        </a>
+                        <a href="{{ route('students.export.excel') }}" class="inline-flex items-center px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600">
+                            <x-heroicon-o-table-cells class="w-5 h-5 mr-2"/> Download as Excel
+                        </a>
                     </div>
 
                     <!-- Students Table -->
@@ -72,7 +88,7 @@
                                                 <a href="{{ route('students.report-card', ['user' => $student, 'stream' => $student->streams->first()]) }}" class="text-blue-500 hover:underline ml-4">Report Card</a>
                                             @endif
                                             <button @click="$dispatch('open-photo-modal', { studentId: {{ $student->id }}, studentName: '{{ $student->name }}' })" class="text-green-500 hover:underline ml-4">Upload Photo</button>
-                                            <a href="{{ route('profile.edit') }}" class="text-yellow-500 hover:underline ml-4">Edit</a>
+                                            <a href="{{ route('users.edit', $student) }}" class="text-yellow-500 hover:underline ml-4">Edit</a>
                                         </td>
                                     </tr>
                                 @empty
@@ -136,6 +152,31 @@
 
     @push('scripts')
     <script>
+        function fetchSuggestions() {
+            const query = this.query;
+            const suggestionsList = document.getElementById('suggestions-list');
+
+            if (query.length < 2) {
+                suggestionsList.innerHTML = '';
+                return;
+            }
+
+            fetch(`{{ route('students.search') }}?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsList.innerHTML = '';
+                    if (data.length) {
+                        data.forEach(student => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<a href="#" @click.prevent="query = '${student.first_name} ${student.last_name}'; open = false; $nextTick(() => $root.closest('form').submit())" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">${student.first_name} ${student.last_name}</a>`;
+                            suggestionsList.appendChild(li);
+                        });
+                    } else {
+                        suggestionsList.innerHTML = '<li class="px-4 py-2 text-sm text-gray-500">No results found</li>';
+                    }
+                });
+        }
+
         document.addEventListener('alpine:init', () => {
             const video = document.getElementById('webcam');
             const canvas = document.getElementById('canvas');

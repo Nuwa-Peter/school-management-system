@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Papers for') }} {{ $subject->name }}
+                {{ __('Streams for') }} {{ $classLevel->name }}
             </h2>
-            <a href="{{ route('subjects.papers.create', $subject) }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-                Add New Paper
+            <a href="{{ route('class-levels.streams.create', $classLevel) }}" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                Add New Stream
             </a>
         </div>
     </x-slot>
@@ -23,21 +23,17 @@
                                 </tr>
                             </thead>
                             <tbody class="text-gray-700">
-                                @forelse($papers as $paper)
+                                @forelse($streams as $stream)
                                     <tr class="border-b">
-                                        <td class="py-3 px-4">{{ $paper->name }}</td>
+                                        <td class="py-3 px-4">{{ $stream->name }}</td>
                                         <td class="py-3 px-4">
-                                            <a href="{{ route('papers.edit', $paper) }}" class="text-yellow-500 hover:underline ml-4">Edit</a>
-                                            <form action="{{ route('papers.destroy', $paper) }}" method="POST" class="inline-block ml-4" onsubmit="return confirm('Are you sure you want to delete this paper?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:underline">Delete</button>
-                                            </form>
+                                            <a href="{{ route('streams.edit', $stream) }}" class="text-yellow-500 hover:underline ml-4">Edit</a>
+                                            <button @click.prevent="$dispatch('open-delete-modal', { action: '{{ route('streams.destroy', $stream) }}' })" class="text-red-500 hover:underline ml-4">Delete</button>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2" class="py-3 px-4 text-center">No papers found for this subject.</td>
+                                        <td colspan="2" class="py-3 px-4 text-center">No streams found for this class level.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

@@ -29,13 +29,9 @@
                                         <td class="py-3 px-4">{{ $subject->name }}</td>
                                         <td class="py-3 px-4">{{ $subject->code }}</td>
                                         <td class="py-3 px-4">
-                                            <a href="{{ route('subjects.papers.index', $subject) }}" class="text-blue-500 hover:underline">Manage Papers</a>
+                                            <a href="{{ route('subjects.manage-papers', $subject) }}" class="text-blue-500 hover:underline">Manage Papers</a>
                                             <a href="{{ route('subjects.edit', $subject) }}" class="text-yellow-500 hover:underline ml-4">Edit</a>
-                                            <form action="{{ route('subjects.destroy', $subject) }}" method="POST" class="inline-block ml-4" onsubmit="return confirm('Are you sure you want to delete this subject?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:underline">Delete</button>
-                                            </form>
+                                            <button @click.prevent="$dispatch('open-delete-modal', { action: '{{ route('subjects.destroy', $subject) }}' })" class="text-red-500 hover:underline ml-4">Delete</button>
                                         </td>
                                     </tr>
                                 @empty

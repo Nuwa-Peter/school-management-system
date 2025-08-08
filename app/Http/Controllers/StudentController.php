@@ -129,4 +129,36 @@ class StudentController extends Controller
 
         return $pdf->stream('id-card.pdf');
     }
+
+    public function downloadTemplate()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new class implements \Maatwebsite\Excel\Concerns\WithHeadings {
+            public function headings(): array
+            {
+                return [
+                    'first_name',
+                    'last_name',
+                    'other_name',
+                    'lin',
+                    'email',
+                    'gender',
+                ];
+            }
+        }, 'students_template.xlsx');
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
+        $students = User::where('role', \App\Enums\Role::STUDENT)
+            ->where(function ($q) use ($query) {
+                $q->where('first_name', 'like', "%{$query}%")
+                    ->orWhere('last_name', 'like', "%{$query}%")
+                    ->orWhere('lin', 'like', "%{$query}%");
+            })
+            ->take(10)
+            ->get(['id', 'first_name', 'last_name']);
+
+        return response()->json($students);
+    }
 }

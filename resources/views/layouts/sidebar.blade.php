@@ -26,10 +26,17 @@
                 </a>
             </li>
             <li class="mb-2">
-                <a href="{{ route('subjects.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('subjects.index') ? 'bg-gray-700' : '' }}">
-                    <x-heroicon-o-book-open class="w-6 h-6 mr-3" />
-                    <span>Subjects</span>
-                </a>
+                <x-sidebar-dropdown :active="request()->routeIs('subjects.*')">
+                    <x-slot name="trigger">
+                        <x-heroicon-o-book-open class="w-6 h-6 mr-3" />
+                        <span>Subjects</span>
+                    </x-slot>
+                    <x-slot name="content">
+                        <a href="{{ route('subjects.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Manage Subjects</a>
+                        {{-- Placeholder for future link --}}
+                        <a href="#" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Assign Subjects</a>
+                    </x-slot>
+                </x-sidebar-dropdown>
             </li>
             <li class="mb-2">
                 <a href="{{ route('teacher-assignments.create') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('teacher-assignments.create') ? 'bg-gray-700' : '' }}">
@@ -43,7 +50,7 @@
                     <span>Assign Students</span>
                 </a>
             </li>
-            @if(Auth::user()->role === \App\Enums\Role::TEACHER)
+            @if(\Illuminate\Support\Facades\Auth::user()->role === \App\Enums\Role::TEACHER)
             <li class="mb-2">
                 <a href="{{ route('marks.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('marks.index') ? 'bg-gray-700' : '' }}">
                     <x-heroicon-o-pencil-square class="w-6 h-6 mr-3" />

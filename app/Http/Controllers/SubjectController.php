@@ -81,4 +81,44 @@ class SubjectController extends Controller
 
         return redirect()->route('subjects.index')->with('success', 'Subject deleted successfully.');
     }
+
+    public function managePapers(Subject $subject): View
+    {
+        $subject->load('papers');
+        return view('subjects.manage-papers', compact('subject'));
+    }
+
+    public function storePapers(Request $request, Subject $subject): RedirectResponse
+    {
+        $request->validate([
+            'papers' => ['nullable', 'array'],
+            'papers.*.name' => ['required', 'string', 'max:255'],
+            'papers.*.id' => ['nullable', 'exists:papers,id'],
+        ]);
+
+        $existingPaperIds = [];
+
+        // Update existing papers and create new ones
+        if ($request->has('papers')) {
+            foreach ($request->papers as $paperData) {
+                if (isset($paperData['id'])) {
+                    // Update existing paper
+                    $paper = \App\Models\Paper::find($paperData['id']);
+                    if ($paper) {
+                        $paper->update(['name' => $paperData['name']]);
+                        $existingPaperIds[] = $paper->id;
+                    }
+                } else {
+                    // Create new paper
+                    $newPaper = $subject->papers()->create(['name' => $paperData['name']]);
+                    $existingPaperIds[] = $newPaper->id;
+                }
+            }
+        }
+
+        // Delete papers that were not in the submission
+        $subject->papers()->whereNotIn('id', $existingPaperIds)->delete();
+
+        return redirect()->route('subjects.index')->with('success', 'Papers updated successfully.');
+    }
 }

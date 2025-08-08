@@ -29,13 +29,9 @@
                                         <td class="py-3 px-4">{{ $classLevel->name }}</td>
                                         <td class="py-3 px-4">{{ $classLevel->streams_count }}</td>
                                         <td class="py-3 px-4">
-                                            <a href="#" class="text-blue-500 hover:underline">View Streams</a>
+                                            <a href="{{ route('class-levels.streams.index', $classLevel) }}" class="text-blue-500 hover:underline">View Streams</a>
                                             <a href="{{ route('class-levels.edit', $classLevel) }}" class="text-yellow-500 hover:underline ml-4">Edit</a>
-                                            <form action="{{ route('class-levels.destroy', $classLevel) }}" method="POST" class="inline-block ml-4" onsubmit="return confirm('Are you sure you want to delete this class level? This will also delete all associated streams.');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:underline">Delete</button>
-                                            </form>
+                                            <button @click.prevent="$dispatch('open-delete-modal', { action: '{{ route('class-levels.destroy', $classLevel) }}' })" class="text-red-500 hover:underline ml-4">Delete</button>
                                         </td>
                                     </tr>
                                 @empty
