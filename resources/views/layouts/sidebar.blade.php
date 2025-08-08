@@ -91,6 +91,14 @@
                 </x-sidebar-dropdown>
             </li>
             <!-- More links will be added here -->
+            @if(\Illuminate\Support\Facades\Auth::user()->role === \App\Enums\Role::ROOT)
+            <li class="mb-2">
+                <a href="{{ route('admin.chat.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('admin.chat.index') ? 'bg-gray-700' : '' }}">
+                    <x-heroicon-o-shield-check class="w-6 h-6 mr-3" />
+                    <span>Chat Administration</span>
+                </a>
+            </li>
+            @endif
         </ul>
     </nav>
 </aside>

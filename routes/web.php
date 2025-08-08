@@ -14,6 +14,9 @@ use App\Http\Controllers\TeacherAssignmentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\DirectMessageController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ChatAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -93,7 +96,22 @@ Route::middleware('auth')->group(function () {
 
     // Teacher Chat
     Route::get('teacher/chat', [ChatController::class, 'index'])->name('teacher.chat.index');
+    Route::get('chat/group-messages', [ChatController::class, 'getGroupMessages'])->name('chat.group-messages');
     Route::post('teacher/chat/send', [ChatController::class, 'sendMessage'])->name('teacher.chat.send');
+
+    // Direct Messages
+    Route::get('/dm/{receiver}', [DirectMessageController::class, 'show'])->name('dm.show');
+    Route::post('/dm/{receiver}', [DirectMessageController::class, 'store'])->name('dm.store');
+
+    // Message Deletion
+    Route::delete('/messages/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
+
+    // Admin Chat Oversight
+    Route::middleware('role:root')->group(function () {
+        Route::get('/admin/chat', [ChatAdminController::class, 'index'])->name('admin.chat.index');
+        Route::get('/admin/chat/{channel}', [ChatAdminController::class, 'showConversation'])->name('admin.chat.show');
+        Route::delete('/admin/chat/messages/{messageId}', [ChatAdminController::class, 'forceDelete'])->name('admin.chat.messages.delete');
+    });
 });
 
 require __DIR__.'/auth.php';

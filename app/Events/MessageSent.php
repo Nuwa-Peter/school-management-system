@@ -2,9 +2,7 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
+use App\Models\Message; // Use the Message model
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -19,27 +17,20 @@ class MessageSent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * User that sent the message
+     * The message instance.
      *
-     * @var User
-     */
-    public $user;
-
-    /**
-     * Message details
-     *
-     * @var string
+     * @var \App\Models\Message
      */
     public $message;
 
     /**
      * Create a new event instance.
      *
+     * @param  \App\Models\Message  $message
      * @return void
      */
-    public function __construct(User $user, string $message)
+    public function __construct(Message $message)
     {
-        $this->user = $user;
         $this->message = $message;
     }
 
@@ -50,6 +41,22 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
+        if ($this->message->receiver_id) {
+            // This is a DM, broadcast on its specific channel
+            return new PrivateChannel($this->message->channel);
+        }
+
+        // This is a group chat message
         return new PrivateChannel('chat');
+    }
+
+    /**
+     * Get the data to broadcast.
+     *
+     * @return array
+     */
+    public function broadcastWith(): array
+    {
+        return ['message' => $this->message->load('sender')];
     }
 }
