@@ -43,6 +43,22 @@
                     <span>Assign Students</span>
                 </a>
             </li>
+            @if(in_array(\Illuminate\Support\Facades\Auth::user()->role, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER, \App\Enums\Role::BURSAR]))
+            <li class="mb-2">
+                <x-sidebar-dropdown :active="request()->routeIs('invoices.*') || request()->routeIs('fee-structures.*') || request()->routeIs('expenses.*') || request()->routeIs('reports.*')">
+                    <x-slot name="trigger">
+                        <x-heroicon-o-banknotes class="w-6 h-6 mr-3" />
+                        <span>Finance</span>
+                    </x-slot>
+                    <x-slot name="content">
+                        <a href="{{ route('invoices.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Invoices</a>
+                        <a href="{{ route('fee-structures.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Fee Structures</a>
+                        <a href="{{ route('expenses.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Expenses</a>
+                        <a href="{{ route('reports.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Reports</a>
+                    </x-slot>
+                </x-sidebar-dropdown>
+            </li>
+            @endif
             @if(in_array(\Illuminate\Support\Facades\Auth::user()->role, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]))
             <li class="mb-2">
                 <x-sidebar-dropdown :active="request()->routeIs('documents.*')">

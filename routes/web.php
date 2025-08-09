@@ -84,6 +84,32 @@ Route::middleware('auth')->group(function () {
     Route::get('students/{user}/streams/{stream}/report-card', [StudentController::class, 'generateReportCard'])->name('students.report-card')->middleware('role:root,headteacher');
     Route::get('students/{user}/id-card', [StudentController::class, 'generateIdCard'])->name('students.id-card')->middleware('role:root,headteacher');
 
+    // Fee Structure Management
+    Route::resource('fee-structures', \App\Http\Controllers\FeeStructureController::class)
+        ->middleware('role:root,headteacher,bursar');
+
+    // Invoice Management
+    Route::resource('invoices', \App\Http\Controllers\InvoiceController::class)
+        ->except(['edit', 'update']) // Invoices are generated, not edited in a traditional sense.
+        ->middleware('role:root,headteacher,bursar');
+    Route::get('invoices/{invoice}/export/pdf', [\App\Http\Controllers\InvoiceController::class, 'exportPdf'])->name('invoices.export.pdf')->middleware('role:root,headteacher,bursar');
+    Route::get('invoices/{invoice}/export/excel', [\App\Http\Controllers\InvoiceController::class, 'exportExcel'])->name('invoices.export.excel')->middleware('role:root,headteacher,bursar');
+
+    // Payment Recording
+    Route::post('invoices/{invoice}/payments', [\App\Http\Controllers\PaymentController::class, 'store'])->name('invoices.payments.store')->middleware('role:root,headteacher,bursar');
+
+    // Expense Tracking
+    Route::resource('expenses', \App\Http\Controllers\ExpenseController::class)
+        ->middleware('role:root,headteacher,bursar');
+
+    // Financial Reports
+    Route::group(['prefix' => 'reports', 'as' => 'reports.', 'middleware' => ['auth', 'role:root,headteacher,bursar']], function () {
+        Route::get('/', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
+        Route::get('/outstanding-balances', [\App\Http\Controllers\ReportController::class, 'outstandingBalances'])->name('outstanding-balances');
+        Route::get('/payment-summaries', [\App\Http\Controllers\ReportController::class, 'paymentSummaries'])->name('payment-summaries');
+        Route::get('/income-vs-expenditure', [\App\Http\Controllers\ReportController::class, 'incomeVsExpenditure'])->name('income-vs-expenditure');
+    });
+
     // Communication
     Route::get('communications/create', [CommunicationController::class, 'create'])->name('communications.create')->middleware('role:root,headteacher');
     Route::post('communications', [CommunicationController::class, 'send'])->name('communications.send')->middleware('role:root,headteacher');
