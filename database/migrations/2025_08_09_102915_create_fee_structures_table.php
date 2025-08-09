@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Add a unique constraint to prevent duplicate entries
-            $table->unique(['fee_category_id', 'class_level_id', 'academic_year']);
+            $table->unique(['fee_category_id', 'class_level_id', 'academic_year'], 'fee_structure_unique');
         });
     }
 
