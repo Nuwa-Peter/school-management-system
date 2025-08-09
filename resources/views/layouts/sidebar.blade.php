@@ -1,4 +1,4 @@
-<aside class="w-64 bg-gray-800 text-white min-h-screen p-4">
+<aside class="w-64 bg-gray-800 text-white h-screen p-4 overflow-y-auto">
     <div class="mb-10 text-center">
         <a href="{{ route('dashboard') }}">
             <img src="{{ asset('images/logo.png') }}" alt="School Logo" class="w-20 h-20 mx-auto mb-2 rounded-full">
@@ -33,16 +33,9 @@
                     </x-slot>
                     <x-slot name="content">
                         <a href="{{ route('subjects.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Manage Subjects</a>
-                        {{-- Placeholder for future link --}}
-                        <a href="#" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Assign Subjects</a>
+                        <a href="{{ route('teacher-assignments.create') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Assign Subjects to Teachers</a>
                     </x-slot>
                 </x-sidebar-dropdown>
-            </li>
-            <li class="mb-2">
-                <a href="{{ route('teacher-assignments.create') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('teacher-assignments.create') ? 'bg-gray-700' : '' }}">
-                    <x-heroicon-o-user-plus class="w-6 h-6 mr-3" />
-                    <span>Assign Teachers</span>
-                </a>
             </li>
             <li class="mb-2">
                 <a href="{{ route('student-assignments.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('student-assignments.index') ? 'bg-gray-700' : '' }}">
@@ -50,6 +43,20 @@
                     <span>Assign Students</span>
                 </a>
             </li>
+            @if(in_array(\Illuminate\Support\Facades\Auth::user()->role, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]))
+            <li class="mb-2">
+                <x-sidebar-dropdown :active="request()->routeIs('documents.*')">
+                    <x-slot name="trigger">
+                        <x-heroicon-o-document-duplicate class="w-6 h-6 mr-3" />
+                        <span>Documents</span>
+                    </x-slot>
+                    <x-slot name="content">
+                        <a href="{{ route('documents.id-card.select') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Generate ID Card</a>
+                        <a href="{{ route('documents.report-card.select') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Generate Report Card</a>
+                    </x-slot>
+                </x-sidebar-dropdown>
+            </li>
+            @endif
             @if(\Illuminate\Support\Facades\Auth::user()->role === \App\Enums\Role::TEACHER)
             <li class="mb-2">
                 <a href="{{ route('marks.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('marks.index') ? 'bg-gray-700' : '' }}">
@@ -62,7 +69,7 @@
             <li class="mb-2">
                 <a href="{{ route('teacher.chat.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('teacher.chat.index') ? 'bg-gray-700' : '' }}">
                     <x-heroicon-o-chat-bubble-left-right class="w-6 h-6 mr-3" />
-                    <span>Teacher Chat</span>
+                    <span>Chat</span>
                 </a>
             </li>
             @endif
@@ -95,7 +102,7 @@
             <li class="mb-2">
                 <a href="{{ route('admin.chat.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('admin.chat.index') ? 'bg-gray-700' : '' }}">
                     <x-heroicon-o-shield-check class="w-6 h-6 mr-3" />
-                    <span>Chat Administration</span>
+                    <span>Manage Chats</span>
                 </a>
             </li>
             @endif

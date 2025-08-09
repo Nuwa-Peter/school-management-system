@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class ChatAdminController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('role:root');
-    }
-
     /**
      * Display a list of all chat conversations.
      */

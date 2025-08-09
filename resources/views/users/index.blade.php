@@ -18,8 +18,9 @@
                                 <tr>
                                     <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Name</th>
                                     <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Email</th>
-                                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Role</th>
-                                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm text-left">Status</th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Role</th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Status</th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-700">
@@ -29,9 +30,17 @@
                                         <td class="py-3 px-4">{{ $user->email }}</td>
                                         <td class="py-3 px-4 capitalize">{{ $user->role->value }}</td>
                                         <td class="py-3 px-4">
-                                            <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full">
+                                            <span class="px-2 py-1 font-semibold leading-tight {{ $user->status === 'active' ? 'text-green-700 bg-green-100' : 'text-red-700 bg-red-100' }} rounded-full">
                                                 {{ $user->status }}
                                             </span>
+                                        </td>
+                                        <td class="py-3 px-4 flex items-center space-x-2">
+                                            <a href="{{ route('users.edit', $user) }}" class="text-blue-600 hover:text-blue-900">
+                                                <x-heroicon-o-pencil-square class="w-5 h-5" />
+                                            </a>
+                                            <button x-data x-on:click.prevent="$dispatch('open-delete-modal', { action: '{{ route('users.destroy', $user) }}' })" class="text-red-600 hover:text-red-900">
+                                                <x-heroicon-o-trash class="w-5 h-5" />
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach

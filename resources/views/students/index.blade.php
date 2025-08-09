@@ -49,13 +49,13 @@
                             <x-heroicon-o-arrow-up-tray class="w-5 h-5 mr-2"/> Upload Students (Excel)
                         </a>
                         <a href="{{ route('students.template') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
-                            <x-heroicon-o-arrow-down-tray class="w-5 h-5 mr-2"/> Download Template
+                            <x-heroicon-o-document-arrow-down class="w-5 h-5 mr-2"/> Download Excel Template
                         </a>
-                        <a href="{{ route('students.export.pdf') }}" class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
-                            <x-heroicon-o-document-arrow-down class="w-5 h-5 mr-2"/> Download as PDF
+                        <a id="export-pdf-link" href="{{ route('students.export.pdf') }}" class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+                            <x-heroicon-o-document-text class="w-5 h-5 mr-2"/> Download List (PDF)
                         </a>
-                        <a href="{{ route('students.export.excel') }}" class="inline-flex items-center px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600">
-                            <x-heroicon-o-table-cells class="w-5 h-5 mr-2"/> Download as Excel
+                        <a id="export-excel-link" href="{{ route('students.export.excel') }}" class="inline-flex items-center px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600">
+                            <x-heroicon-o-table-cells class="w-5 h-5 mr-2"/> Download List (Excel)
                         </a>
                     </div>
 
@@ -82,13 +82,13 @@
                                                 {{ $stream->classLevel->name }} {{ $stream->name }}@if(!$loop->last), @endif
                                             @endforeach
                                         </td>
-                                        <td class="py-3 px-4">
-                                            <a href="{{ route('students.id-card', $student) }}" class="text-indigo-500 hover:underline">ID Card</a>
-                                            @if($student->streams->first())
-                                                <a href="{{ route('students.report-card', ['user' => $student, 'stream' => $student->streams->first()]) }}" class="text-blue-500 hover:underline ml-4">Report Card</a>
-                                            @endif
-                                            <button @click="$dispatch('open-photo-modal', { studentId: {{ $student->id }}, studentName: '{{ $student->name }}' })" class="text-green-500 hover:underline ml-4">Upload Photo</button>
-                                            <a href="{{ route('users.edit', $student) }}" class="text-yellow-500 hover:underline ml-4">Edit</a>
+                                        <td class="py-3 px-4 flex items-center space-x-4">
+                                            <button @click="$dispatch('open-photo-modal', { studentId: {{ $student->id }}, studentName: '{{ $student->name }}' })" class="text-green-600 hover:text-green-900" title="Upload Photo">
+                                                <x-heroicon-o-arrow-up-on-square class="w-5 h-5" />
+                                            </button>
+                                            <a href="{{ route('users.edit', $student) }}" class="text-blue-600 hover:text-blue-900" title="Edit Student">
+                                                <x-heroicon-o-pencil-square class="w-5 h-5" />
+                                            </a>
                                         </td>
                                     </tr>
                                 @empty
@@ -178,6 +178,28 @@
         }
 
         document.addEventListener('alpine:init', () => {
+            // Export links updater
+            const streamFilter = document.getElementById('stream_id');
+            const pdfLink = document.getElementById('export-pdf-link');
+            const excelLink = document.getElementById('export-excel-link');
+            const pdfBaseUrl = pdfLink.href;
+            const excelBaseUrl = excelLink.href;
+
+            function updateExportLinks() {
+                const streamId = streamFilter.value;
+                if (streamId) {
+                    pdfLink.href = `${pdfBaseUrl}?stream_id=${streamId}`;
+                    excelLink.href = `${excelBaseUrl}?stream_id=${streamId}`;
+                } else {
+                    pdfLink.href = pdfBaseUrl;
+                    excelLink.href = excelBaseUrl;
+                }
+            }
+
+            streamFilter.addEventListener('change', updateExportLinks);
+            updateExportLinks(); // Set initial state on page load
+
+            // Webcam logic
             const video = document.getElementById('webcam');
             const canvas = document.getElementById('canvas');
             const snap = document.getElementById('snap');

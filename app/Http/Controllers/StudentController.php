@@ -73,14 +73,22 @@ class StudentController extends Controller
         return redirect()->route('students.index')->with('success', 'Students imported successfully.');
     }
 
-    public function exportExcel()
+    public function exportExcel(Request $request)
     {
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\StudentsExport, 'students.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\StudentsExport($request->stream_id), 'students.xlsx');
     }
 
-    public function exportPdf()
+    public function exportPdf(Request $request)
     {
-        $students = User::where('role', \App\Enums\Role::STUDENT)->orderBy('last_name')->get();
+        $studentsQuery = User::where('role', \App\Enums\Role::STUDENT)
+            ->when($request->stream_id, function ($query, $stream_id) {
+                $query->whereHas('streams', function ($q) use ($stream_id) {
+                    $q->where('streams.id', $stream_id);
+                });
+            })
+            ->orderBy('last_name');
+
+        $students = $studentsQuery->get();
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('students.pdf', compact('students'));
         return $pdf->download('students.pdf');
     }
@@ -118,13 +126,34 @@ class StudentController extends Controller
         $issue_date = now()->format('d-m-Y');
         $expiry_date = now()->addYears(1)->format('d-m-Y');
 
-        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(50)->generate(route('students.id-card', $user));
+        // A QR code should point to a public-facing, stable URL.
+        // We'll assume a simple profile 'show' route exists for this.
+        $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::size(50)->generate(route('users.show', $user)));
+
+        $photoData = null;
+        try {
+            if ($user->photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->photo)) {
+                $photoPath = \Illuminate\Support\Facades\Storage::disk('public')->path($user->photo);
+                $type = pathinfo($photoPath, PATHINFO_EXTENSION);
+                $photoData = 'data:image/' . $type . ';base64,' . base64_encode(file_get_contents($photoPath));
+            } else {
+                // Fallback to UI Avatars
+                $avatarUrl = 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&color=7F9CF5&background=EBF4FF&size=128';
+                $imageData = file_get_contents($avatarUrl);
+                $photoData = 'data:image/png;base64,' . base64_encode($imageData);
+            }
+        } catch (\Exception $e) {
+            // Log error or handle gracefully
+            // For now, we'll leave photoData as null if everything fails
+        }
+
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('students.id-card', [
             'student' => $user,
             'issue_date' => $issue_date,
             'expiry_date' => $expiry_date,
             'qrCode' => $qrCode,
+            'photoData' => $photoData,
         ]);
 
         return $pdf->stream('id-card.pdf');
@@ -136,10 +165,11 @@ class StudentController extends Controller
             public function headings(): array
             {
                 return [
+                    'lin',
                     'first_name',
                     'last_name',
                     'other_name',
-                    'lin',
+                    'date_of_birth (YYYY-MM-DD)',
                     'email',
                     'gender',
                 ];

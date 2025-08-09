@@ -1,4 +1,11 @@
 <x-guest-layout>
+    <div class="mb-4 text-center">
+        <a href="/">
+            <img src="{{ asset('images/logo.png') }}" alt="School Logo" class="w-20 h-20 mx-auto mb-2 rounded-full">
+            <h1 class="text-xl font-bold text-gray-700">St. Joseph's VSS</h1>
+        </a>
+    </div>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

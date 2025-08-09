@@ -12,6 +12,16 @@
                     <form action="{{ route('communications.send') }}" method="POST">
                         @csrf
 
+                        <!-- Delivery Method -->
+                        <div class="mb-4">
+                            <x-input-label for="method" :value="__('Delivery Method')" />
+                            <select id="method" name="method" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                <option value="email">Email</option>
+                                <option value="sms">SMS</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('method')" class="mt-2" />
+                        </div>
+
                         <!-- Recipients -->
                         <div class="mb-4">
                             <x-input-label for="recipients" :value="__('Recipients')" />

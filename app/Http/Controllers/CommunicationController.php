@@ -22,36 +22,61 @@ class CommunicationController extends Controller
     public function send(Request $request): RedirectResponse
     {
         $request->validate([
+            'method' => ['required', 'string', 'in:email,sms'],
             'recipients' => ['required', 'string'],
-            'subject' => ['required', 'string', 'max:255'],
+            'subject' => ['required_if:method,email', 'string', 'max:255'],
             'message' => ['required', 'string'],
         ]);
 
-        $recipients = User::query();
+        $recipientsQuery = User::query();
 
         switch ($request->recipients) {
             case 'all_teachers':
-                $recipients->where('role', Role::TEACHER);
+                $recipientsQuery->where('role', Role::TEACHER);
                 break;
             case 'all_parents':
-                $recipients->where('role', Role::PARENT);
+                // This would require linking parents to students. For now, this is a placeholder.
+                // $recipientsQuery->where('role', Role::PARENT);
                 break;
             case 'all_students':
-                $recipients->where('role', Role::STUDENT);
+                $recipientsQuery->where('role', Role::STUDENT);
                 break;
             default:
-                // Assume it's a stream ID
                 if (str_starts_with($request->recipients, 'stream_')) {
                     $streamId = substr($request->recipients, 7);
-                    $recipients->whereHas('streams', fn($q) => $q->where('streams.id', $streamId));
+                    $recipientsQuery->whereHas('streams', fn($q) => $q->where('streams.id', $streamId));
                 }
                 break;
         }
 
-        // Use BCC to send to all recipients without revealing email addresses
-        Mail::bcc($recipients->pluck('email')->all())
-            ->queue(new BulkMessageMail($request->subject, $request->message));
+        $users = $recipientsQuery->get();
+        $statusMessage = 'No action taken.';
 
-        return redirect()->route('communications.create')->with('success', 'Message has been queued for sending.');
+        switch ($request->method) {
+            case 'email':
+                $emails = $users->pluck('email')->filter()->all();
+                if (!empty($emails)) {
+                    Mail::bcc($emails)->queue(new BulkMessageMail($request->subject, $request->message));
+                    $statusMessage = 'Email has been queued for sending to ' . count($emails) . ' recipients.';
+                } else {
+                    $statusMessage = 'No recipients found with valid email addresses.';
+                }
+                break;
+
+            case 'sms':
+                // Placeholder for SMS sending logic
+                $phoneNumbers = $users->pluck('phone_number')->filter()->all();
+                if (!empty($phoneNumbers)) {
+                    // foreach ($phoneNumbers as $number) {
+                    //     // SMS::to($number)->send($request->message);
+                    // }
+                    $statusMessage = 'SMS functionality is a placeholder. Messages would be sent to ' . count($phoneNumbers) . ' recipients.';
+                } else {
+                    $statusMessage = 'No recipients found with valid phone numbers.';
+                }
+                break;
+        }
+
+        return redirect()->route('communications.create')->with('success', $statusMessage);
     }
 }

@@ -8,6 +8,17 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Notifications -->
+                <a href="{{ route('notifications.index') }}" class="relative inline-flex items-center p-2 mr-2 text-sm font-medium text-center text-gray-500 hover:text-gray-700 focus:outline-none">
+                    <x-heroicon-o-bell class="h-6 w-6" />
+                    <span class="sr-only">Notifications</span>
+                    @if(\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count() > 0)
+                        <div class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1 -right-1">
+                            {{ \Illuminate\Support\Facades\Auth::user()->unreadNotifications->count() }}
+                        </div>
+                    @endif
+                </a>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">

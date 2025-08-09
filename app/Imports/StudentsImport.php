@@ -16,11 +16,15 @@ class StudentsImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
+        // The key is sanitized from 'date_of_birth (YYYY-MM-DD)'
+        $dobKey = 'date_of_birth_yyyy_mm_dd';
+
         return new User([
+            'lin' => $row['lin'],
             'first_name' => $row['first_name'],
             'last_name' => $row['last_name'],
             'other_name' => $row['other_name'],
-            'lin' => $row['lin'],
+            'date_of_birth' => isset($row[$dobKey]) ? \Carbon\Carbon::parse($row[$dobKey])->format('Y-m-d') : null,
             'email' => $row['email'],
             'gender' => $row['gender'],
             'password' => \Illuminate\Support\Facades\Hash::make('password'), // Default password

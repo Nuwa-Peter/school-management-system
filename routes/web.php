@@ -17,6 +17,8 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DirectMessageController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ChatAdminController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,6 +28,8 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/users/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('users.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -90,7 +94,7 @@ Route::middleware('auth')->group(function () {
     Route::get('attendance/records', [AttendanceController::class, 'records'])->name('attendance.records')->middleware('role:root,headteacher,bursar');
 
     // Video Content
-    Route::get('videos', [VideoController::class, 'index'])->name('videos.index')->middleware('role:student,teacher');
+    Route::get('videos', [VideoController::class, 'index'])->name('videos.index')->middleware('role:student,teacher,headteacher,root');
     Route::get('videos/upload', [VideoController::class, 'create'])->name('videos.create')->middleware('role:teacher');
     Route::post('videos', [VideoController::class, 'store'])->name('videos.store')->middleware('role:teacher');
 
@@ -112,6 +116,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/chat/{channel}', [ChatAdminController::class, 'showConversation'])->name('admin.chat.show');
         Route::delete('/admin/chat/messages/{messageId}', [ChatAdminController::class, 'forceDelete'])->name('admin.chat.messages.delete');
     });
+
+    // Document Generation
+    Route::get('/documents/id-card/select', [DocumentController::class, 'selectIdCard'])->name('documents.id-card.select');
+    Route::post('/documents/id-card', [DocumentController::class, 'generateIdCard'])->name('documents.id-card.generate');
+    Route::get('/documents/report-card/select', [DocumentController::class, 'selectReportCard'])->name('documents.report-card.select');
+    Route::post('/documents/report-card', [DocumentController::class, 'generateReportCard'])->name('documents.report-card.generate');
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 });
 
 require __DIR__.'/auth.php';

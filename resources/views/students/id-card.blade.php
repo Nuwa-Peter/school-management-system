@@ -24,7 +24,7 @@
             </div>
         </header>
         <div style="margin-top: 10px;">
-            <img src="{{ public_path('storage/' . $student->photo) }}" alt="Student Photo" style="width: 70px; height: 70px; float: left; margin-right: 10px;">
+            <img src="{{ $photoData }}" alt="Student Photo" style="width: 70px; height: 70px; float: left; margin-right: 10px;">
             <p><strong>Name:</strong> {{ $student->name }}</p>
             <p><strong>School ID:</strong> {{ $student->unique_id }}</p>
             <p><strong>LIN:</strong> {{ $student->lin }}</p>
@@ -32,7 +32,7 @@
             <p><strong>Expires:</strong> {{ $expiry_date }}</p>
         </div>
         <div style="position: absolute; bottom: 10px; right: 10px;">
-            {!! $qrCode !!}
+            <img src="data:image/png;base64,{{ $qrCode }}" alt="QR Code">
         </div>
     </div>
 </body>
