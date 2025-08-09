@@ -191,4 +191,18 @@ class StudentController extends Controller
 
         return response()->json($students);
     }
+
+    /**
+     * Display the specified student profile for administrative purposes.
+     */
+    public function show(User $student): View
+    {
+        if ($student->role !== \App\Enums\Role::STUDENT) {
+            abort(404, 'User is not a student.');
+        }
+
+        $student->load(['streams.classLevel', 'disciplineLogs.recordedBy', 'roomAssignments.room.dormitory', 'clubs']);
+
+        return view('students.show', compact('student'));
+    }
 }

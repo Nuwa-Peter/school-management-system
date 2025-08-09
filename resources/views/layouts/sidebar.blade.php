@@ -61,6 +61,21 @@
             @endif
             @if(in_array(\Illuminate\Support\Facades\Auth::user()->role, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]))
             <li class="mb-2">
+                <x-sidebar-dropdown :active="request()->routeIs('dormitories.*') || request()->routeIs('room-assignments.*') || request()->routeIs('clubs.*')">
+                    <x-slot name="trigger">
+                        <x-heroicon-o-user-group class="w-6 h-6 mr-3" />
+                        <span>Welfare & Activities</span>
+                    </x-slot>
+                    <x-slot name="content">
+                        <a href="{{ route('dormitories.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Manage Dormitories</a>
+                        <a href="{{ route('room-assignments.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Room Assignments</a>
+                        <a href="{{ route('clubs.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Manage Clubs</a>
+                    </x-slot>
+                </x-sidebar-dropdown>
+            </li>
+            @endif
+            @if(in_array(\Illuminate\Support\Facades\Auth::user()->role, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]))
+            <li class="mb-2">
                 <x-sidebar-dropdown :active="request()->routeIs('documents.*')">
                     <x-slot name="trigger">
                         <x-heroicon-o-document-duplicate class="w-6 h-6 mr-3" />

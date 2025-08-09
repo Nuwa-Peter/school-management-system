@@ -73,7 +73,12 @@ Route::middleware('auth')->group(function () {
     Route::post('student-assignments', [StudentAssignmentController::class, 'store'])->name('student-assignments.store')->middleware('role:root,headteacher');
 
     // Student Management
+    Route::post('students/{student}/discipline-logs', [\App\Http\Controllers\DisciplineLogController::class, 'store'])->name('students.discipline-logs.store')->middleware('role:root,headteacher');
+    Route::delete('discipline-logs/{disciplineLog}', [\App\Http\Controllers\DisciplineLogController::class, 'destroy'])->name('discipline-logs.destroy')->middleware('role:root,headteacher');
     Route::get('students', [StudentController::class, 'index'])->name('students.index')->middleware('role:root,headteacher');
+    Route::get('students/{student}', [\App\Http\Controllers\StudentController::class, 'show'])->name('students.show')->middleware('role:root,headteacher');
+    Route::get('students/{student}/health-record', [\App\Http\Controllers\HealthRecordController::class, 'edit'])->name('students.health-record.edit')->middleware('role:root,headteacher');
+    Route::put('students/{student}/health-record', [\App\Http\Controllers\HealthRecordController::class, 'update'])->name('students.health-record.update')->middleware('role:root,headteacher');
     Route::get('students/search', [StudentController::class, 'search'])->name('students.search')->middleware('role:root,headteacher');
     Route::post('students/{user}/photo', [StudentController::class, 'updatePhoto'])->name('students.photo.update')->middleware('role:root,headteacher');
     Route::get('students/upload', [StudentController::class, 'showUploadForm'])->name('students.upload.form')->middleware('role:root,headteacher');
@@ -108,6 +113,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/outstanding-balances', [\App\Http\Controllers\ReportController::class, 'outstandingBalances'])->name('outstanding-balances');
         Route::get('/payment-summaries', [\App\Http\Controllers\ReportController::class, 'paymentSummaries'])->name('payment-summaries');
         Route::get('/income-vs-expenditure', [\App\Http\Controllers\ReportController::class, 'incomeVsExpenditure'])->name('income-vs-expenditure');
+    });
+
+    // Hostel Management
+    Route::group(['middleware' => ['auth', 'role:root,headteacher']], function () {
+        Route::resource('dormitories', \App\Http\Controllers\DormitoryController::class);
+        Route::post('dormitories/{dormitory}/rooms', [\App\Http\Controllers\DormitoryController::class, 'storeRoom'])->name('dormitories.rooms.store');
+        Route::delete('dormitory-rooms/{room}', [\App\Http\Controllers\DormitoryController::class, 'destroyRoom'])->name('dormitory-rooms.destroy');
+        Route::resource('room-assignments', \App\Http\Controllers\RoomAssignmentController::class)->except(['show', 'edit', 'update']);
+    });
+
+    // Activities Management
+    Route::group(['middleware' => ['auth', 'role:root,headteacher']], function () {
+        Route::resource('clubs', \App\Http\Controllers\ClubController::class);
+        Route::post('clubs/{club}/members', [\App\Http\Controllers\ClubController::class, 'addMember'])->name('clubs.members.store');
+        Route::delete('clubs/{club}/members/{student}', [\App\Http\Controllers\ClubController::class, 'removeMember'])->name('clubs.members.destroy');
     });
 
     // Communication
