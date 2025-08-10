@@ -1,16 +1,16 @@
 <aside class="w-64 bg-gray-800 text-white h-screen p-4 flex flex-col">
-    <div class="mb-10 text-center">
+    <div class="mb-10 text-center flex-shrink-0">
         <a href="{{ route('dashboard') }}">
             <img src="{{ asset('images/logo.png') }}" alt="School Logo" class="w-20 h-20 mx-auto mb-2 rounded-full">
             <h1 class="text-xl font-bold text-white">St. Joseph's VSS</h1>
         </a>
     </div>
-    <nav class="flex-grow overflow-y-auto">
+    <nav class="flex-grow flex flex-col overflow-y-auto">
         @php
             $userRole = auth()->user()->role;
             $isAdmin = in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]);
         @endphp
-        <ul>
+        <ul class="flex-grow">
             {{-- ========== STUDENT MENU ========== --}}
             @if($userRole === \App\Enums\Role::STUDENT)
                 <li class="mb-2">
@@ -109,6 +109,18 @@
                         <span>Announcements</span>
                     </a>
                 </li>
+                @endif
+
+                @if(in_array($userRole, [\App\Enums\Role::TEACHER, \App\Enums\Role::HEADTEACHER]))
+                <li class="mb-2">
+                    <a href="{{ route('teacher.chat.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('teacher.chat.index') ? 'bg-gray-700' : '' }}">
+                        <x-heroicon-o-chat-bubble-left-right class="w-6 h-6 mr-3" />
+                        <span>Chat</span>
+                    </a>
+                </li>
+                @endif
+
+                @if($isAdmin)
                 <li class="mb-2">
                     <x-sidebar-dropdown :active="request()->routeIs(['ai.*', 'admin.*'])">
                         <x-slot name="trigger"><x-heroicon-o-chart-bar-square class="w-6 h-6 mr-3" /><span>Advanced</span></x-slot>
@@ -119,22 +131,13 @@
                     </x-sidebar-dropdown>
                 </li>
                 @endif
-
-                @if($userRole === \App\Enums\Role::TEACHER)
-                <li class="mb-2">
-                    <a href="{{ route('marks.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('marks.index') ? 'bg-gray-700' : '' }}">
-                        <x-heroicon-o-pencil-square class="w-6 h-6 mr-3" />
-                        <span>Mark Entry</span>
-                    </a>
-                </li>
-                @endif
             @endif
         </ul>
+        <div class="mt-auto">
+            <a href="{{ route('about') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('about') ? 'bg-gray-700' : '' }}">
+                <x-heroicon-o-information-circle class="w-6 h-6 mr-3" />
+                <span>About</span>
+            </a>
+        </div>
     </nav>
-    <div class="mt-auto pt-4 border-t border-gray-700">
-        <a href="{{ route('about') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('about') ? 'bg-gray-700' : '' }}">
-            <x-heroicon-o-information-circle class="w-6 h-6 mr-3" />
-            <span>About</span>
-        </a>
-    </div>
 </aside>
