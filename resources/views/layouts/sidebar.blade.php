@@ -49,13 +49,12 @@
 
                 @if($isAdmin)
                     <li>
-                        <x-sidebar-dropdown :active="request()->routeIs(['users.*', 'students.*', 'alumni.*'])">
+                        <x-sidebar-dropdown :active="request()->routeIs(['users.*', 'students.*'])">
                             <x-slot name="trigger"><x-heroicon-o-users class="w-6 h-6 mr-3" /><span>User Management</span></x-slot>
                             <x-slot name="content">
                                 <a href="{{ route('users.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">All Users</a>
                                 <a href="{{ route('users.create') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Add New User</a>
                                 <a href="{{ route('students.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Student Profiles</a>
-                                <a href="{{ route('alumni.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Alumni Network</a>
                             </x-slot>
                         </x-sidebar-dropdown>
                     </li>
@@ -88,41 +87,7 @@
                 </li>
                 @endif
 
-                @if(in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER, \App\Enums\Role::LIBRARIAN]))
-                <li>
-                    <x-sidebar-dropdown :active="request()->routeIs(['books.*', 'checkouts.*'])">
-                        <x-slot name="trigger"><x-heroicon-o-book-open class="w-6 h-6 mr-3" /><span>Library</span></x-slot>
-                        <x-slot name="content">
-                            <a href="{{ route('books.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Book Catalog</a>
-                            <a href="{{ route('checkouts.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Book Checkouts</a>
-                        </x-slot>
-                    </x-sidebar-dropdown>
-                </li>
-                @endif
-
-                @if(in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER, \App\Enums\Role::LIBRARIAN, \App\Enums\Role::TEACHER]))
-                 <li>
-                    <x-sidebar-dropdown :active="request()->routeIs(['inventory.*', 'bookings.*'])">
-                        <x-slot name="trigger"><x-heroicon-o-archive-box class="w-6 h-6 mr-3" /><span>Resources</span></x-slot>
-                        <x-slot name="content">
-                             <a href="{{ route('inventory.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">General Inventory</a>
-                            <a href="{{ route('bookings.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Resource Bookings</a>
-                        </x-slot>
-                    </x-sidebar-dropdown>
-                </li>
-                @endif
-
                 @if($isAdmin)
-                <li>
-                    <x-sidebar-dropdown :active="request()->routeIs(['dormitories.*', 'room-assignments.*', 'clubs.*'])">
-                        <x-slot name="trigger"><x-heroicon-o-user-group class="w-6 h-6 mr-3" /><span>Welfare & Activities</span></x-slot>
-                        <x-slot name="content">
-                            <a href="{{ route('dormitories.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Manage Dormitories</a>
-                            <a href="{{ route('room-assignments.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Room Assignments</a>
-                            <a href="{{ route('clubs.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Manage Clubs</a>
-                        </x-slot>
-                    </x-sidebar-dropdown>
-                </li>
                 <li>
                     <x-sidebar-dropdown :active="request()->routeIs('documents.*')">
                         <x-slot name="trigger"><x-heroicon-o-document-text class="w-6 h-6 mr-3" /><span>Documents</span></x-slot>
@@ -133,17 +98,9 @@
                     </x-sidebar-dropdown>
                 </li>
                 <li>
-                    <a href="{{ route('announcements.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('announcements.*') ? 'bg-gray-700' : '' }}">
-                        <x-heroicon-o-megaphone class="w-6 h-6 mr-3" />
-                        <span>Announcements</span>
-                    </a>
-                </li>
-                <li>
-                    <x-sidebar-dropdown :active="request()->routeIs(['ai.*', 'admin.*'])">
+                    <x-sidebar-dropdown :active="request()->routeIs(['admin.chat.*'])">
                         <x-slot name="trigger"><x-heroicon-o-chart-bar-square class="w-6 h-6 mr-3" /><span>Advanced</span></x-slot>
                         <x-slot name="content">
-                            <a href="{{ route('ai.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">AI Reports</a>
-                            <a href="{{ route('admin.audit-log.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Audit Trail</a>
                             <a href="{{ route('admin.chat.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Admin Chat</a>
                         </x-slot>
                     </x-sidebar-dropdown>

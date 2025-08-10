@@ -44,6 +44,7 @@ Develop a robust and user-friendly web-based School Management System for St. Jo
 - [x] Teacher Assignment System (Backend & UI)
 - [x] Student Assignment System (Backend & UI)
 - [x] Mark Entry System for Teachers
+- [x] **New:** Scaffolding for a new "Exams" module (Set Exams, View Exams).
 
 ### Phase 3: Student Lifecycle & Documents (Complete)
 - [x] `lin` (Learner Identification Number) field added.
@@ -55,10 +56,10 @@ Develop a robust and user-friendly web-based School Management System for St. Jo
 - [x] Report Card Generation (PDF with Photo & QR Code).
 - [x] ID Card Generation (PDF with Photo, LIN, Dates & QR Code).
 
-### Phase 4: Communication & Content (Complete)
+### Phase 4: Communication & Content (In Progress)
 - [x] Real-time Chat for staff communication.
 - [x] Content Sharing via a simple Video Library for students.
-- [x] Digital Notice Board for school-wide announcements.
+- [ ] Digital Notice Board for school-wide announcements. (Planned)
 
 ### Phase 5: Financial Management (Complete)
 - [x] Fee Category and Expense Category Management.
@@ -68,25 +69,9 @@ Develop a robust and user-friendly web-based School Management System for St. Jo
 - [x] Expense Recording and Categorization.
 - [x] Financial Reporting (Outstanding Balances, Income vs. Expenditure, etc.).
 
-### Phase 6: Student Welfare & Co-curriculars (Complete)
-- [x] Discipline & Conduct Log on student profiles.
-- [x] Confidential Health & Medical Records Management.
-- [x] Dormitory / Hostel Management (Rooms & Assignments).
-- [x] Extracurricular Activity (Clubs) Management.
-
-### Phase 7: Library & Resource Management (Complete)
-- [x] Digital Library System with Book Catalog.
-- [x] Book Checkout and Check-in System.
-- [x] General School Inventory Management.
-- [x] Shared Resource Booking System (e.g., labs, projectors).
-
-### Phase 8: Enhanced Portals (Complete)
-- [x] Dedicated Parent Portal with child's information.
-- [x] Dedicated Student Portal with grades, timetables, etc.
-- [x] Backend logic to link Parent and Student accounts.
-
-### Phase 9 & 10: Advanced Administration (In Progress)
-- [x] AI-Powered Predictive Model (Initial Scaffolding).
-- [x] System Audit Trail for tracking user actions.
-- [x] Alumni Network module to manage graduated students.
-- [x] **New:** Scaffolding for a new "Exams" module (Set Exams, View Exams).
+### Future Phases (Planned)
+- **Phase 6: Student Welfare & Co-curriculars** (Discipline Log, Dormitory Management, Clubs, Health Records)
+- **Phase 7: Library & Resource Management** (Digital Library, Resource Booking, Inventory)
+- **Phase 8: Enhanced Portals** (Parent/Guardian Portal, Student Portal)
+- **Phase 9: AI-Powered Intelligence** (Predictive models, analytics)
+- **Phase 10: Advanced Administration** (Timetabling, Alumni, Audit Trail)

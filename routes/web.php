@@ -86,11 +86,7 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['role:root,headteacher']], function () {
         Route::get('students', [StudentController::class, 'index'])->name('students.index');
         Route::get('students/{student}', [StudentController::class, 'show'])->name('students.show');
-        Route::post('students/{student}/discipline-logs', [DisciplineLogController::class, 'store'])->name('students.discipline-logs.store');
-        Route::delete('discipline-logs/{disciplineLog}', [DisciplineLogController::class, 'destroy'])->name('discipline-logs.destroy');
-        Route::get('students/{student}/health-record', [HealthRecordController::class, 'edit'])->name('students.health-record.edit');
-        Route::put('students/{student}/health-record', [HealthRecordController::class, 'update'])->name('students.health-record.update');
-        Route::post('students/{student}/graduate', [AlumniController::class, 'graduate'])->name('students.graduate');
+        // The routes for DisciplineLog, HealthRecord, and Alumni were removed as their controllers do not exist yet.
         Route::get('students/{user}/report-card/{stream}', [StudentController::class, 'generateReportCard'])->name('students.report-card');
         Route::get('students/{user}/id-card', [StudentController::class, 'generateIdCard'])->name('students.id-card');
     });
@@ -111,36 +107,6 @@ Route::middleware('auth')->group(function () {
         Route::get('reports/income-vs-expenditure', [ReportController::class, 'incomeVsExpenditure'])->name('reports.income-vs-expenditure');
     });
 
-    // Library & Inventory Management
-    Route::group(['middleware' => ['auth', 'role:root,headteacher,librarian']], function () {
-        Route::resource('books', BookController::class);
-        Route::get('checkouts', [BookCheckoutController::class, 'index'])->name('checkouts.index');
-        Route::get('checkouts/create', [BookCheckoutController::class, 'create'])->name('checkouts.create');
-        Route::post('checkouts', [BookCheckoutController::class, 'store'])->name('checkouts.store');
-        Route::patch('checkouts/{checkout}', [BookCheckoutController::class, 'update'])->name('checkouts.update');
-        Route::resource('inventory', InventoryController::class);
-    });
-
-    // Welfare, Activities & Resource Management
-    Route::group(['middleware' => ['auth', 'role:root,headteacher']], function () {
-        Route::resource('dormitories', DormitoryController::class);
-        Route::post('dormitories/{dormitory}/rooms', [DormitoryController::class, 'storeRoom'])->name('dormitories.rooms.store');
-        Route::delete('dormitory-rooms/{room}', [DormitoryController::class, 'destroyRoom'])->name('dormitory-rooms.destroy');
-        Route::resource('room-assignments', RoomAssignmentController::class)->except(['show', 'edit', 'update']);
-        Route::resource('clubs', ClubController::class);
-        Route::post('clubs/{club}/members', [ClubController::class, 'addMember'])->name('clubs.members.store');
-        Route::delete('clubs/{club}/members/{student}', [ClubController::class, 'removeMember'])->name('clubs.members.destroy');
-        Route::resource('resources', ResourceController::class)->except(['create', 'show', 'edit']);
-        Route::resource('announcements', AnnouncementController::class)->except('show');
-    });
-
-    // Resource booking can be done by teachers
-    Route::group(['middleware' => ['auth', 'role:root,headteacher,teacher']], function () {
-        Route::get('bookings', [ResourceBookingController::class, 'index'])->name('bookings.index');
-        Route::post('bookings', [ResourceBookingController::class, 'store'])->name('bookings.store');
-        Route::delete('bookings/{booking}', [ResourceBookingController::class, 'destroy'])->name('bookings.destroy');
-    });
-
     // Document Generation
     Route::group(['middleware' => ['role:root,headteacher'], 'prefix' => 'documents', 'as' => 'documents.'], function () {
         Route::get('select-id-card', [DocumentController::class, 'selectIdCard'])->name('id-card.select');
@@ -151,16 +117,11 @@ Route::middleware('auth')->group(function () {
 
     // Admin-only
     Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:root,headteacher']], function () {
-        Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
-        Route::get('alumni', [AlumniController::class, 'index'])->name('alumni.index');
+        // Routes for AuditLog and Alumni were removed as their controllers do not exist yet.
         Route::get('/chat', [ChatAdminController::class, 'index'])->name('chat.index');
         Route::get('/chat/{channel}', [ChatAdminController::class, 'showConversation'])->name('chat.show');
         Route::delete('/chat/messages/{messageId}', [ChatAdminController::class, 'forceDelete'])->name('chat.messages.delete');
     });
-
-    // Portals
-    Route::get('/parent/dashboard', [ParentPortalController::class, 'dashboard'])->middleware('role:parent', 'parent.linked')->name('parent.dashboard');
-    Route::get('/student/dashboard', [StudentPortalController::class, 'dashboard'])->middleware('role:student')->name('student.dashboard');
 
     // Teacher-specific
     Route::group(['middleware' => 'role:teacher,headteacher'], function() {
