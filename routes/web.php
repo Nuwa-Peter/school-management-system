@@ -119,6 +119,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/income-vs-expenditure', [\App\Http\Controllers\ReportController::class, 'incomeVsExpenditure'])->name('income-vs-expenditure');
     });
 
+    // AI Reports
+    Route::group(['prefix' => 'ai', 'as' => 'ai.', 'middleware' => ['auth', 'role:root,headteacher']], function () {
+        Route::get('/', [\App\Http\Controllers\AiController::class, 'index'])->name('index');
+        Route::get('/student-performance', [\App\Http\Controllers\AiController::class, 'predictStudentPerformance'])->name('student-performance');
+    });
+
     // Hostel Management
     Route::group(['middleware' => ['auth', 'role:root,headteacher']], function () {
         Route::resource('dormitories', \App\Http\Controllers\DormitoryController::class);
@@ -153,6 +159,18 @@ Route::middleware('auth')->group(function () {
         Route::post('bookings', [\App\Http\Controllers\ResourceBookingController::class, 'store'])->name('bookings.store');
         Route::delete('bookings/{booking}', [\App\Http\Controllers\ResourceBookingController::class, 'destroy'])->name('bookings.destroy');
     });
+
+    // Admin
+    Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:root']], function () {
+        Route::get('audit-log', [\App\Http\Controllers\AuditLogController::class, 'index'])->name('audit-log.index');
+    });
+
+    // Alumni
+    Route::group(['middleware' => ['auth', 'role:root,headteacher']], function () {
+        Route::get('alumni', [\App\Http\Controllers\AlumniController::class, 'index'])->name('alumni.index');
+        Route::post('students/{student}/graduate', [\App\Http\Controllers\AlumniController::class, 'graduate'])->name('students.graduate');
+    });
+
 
     // Communication
     Route::group(['middleware' => ['auth', 'role:root,headteacher']], function() {

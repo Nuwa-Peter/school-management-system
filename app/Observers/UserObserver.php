@@ -46,7 +46,7 @@ class UserObserver
      */
     public function created(User $user): void
     {
-        //
+        $this->logAction('created', $user);
     }
 
     /**
@@ -54,7 +54,7 @@ class UserObserver
      */
     public function updated(User $user): void
     {
-        //
+        $this->logAction('updated', $user);
     }
 
     /**
@@ -62,7 +62,24 @@ class UserObserver
      */
     public function deleted(User $user): void
     {
-        //
+        $this->logAction('deleted', $user);
+    }
+
+    /**
+     * Log the action to the audit log.
+     */
+    protected function logAction(string $action, User $user): void
+    {
+        if (Auth::check()) {
+            \App\Models\AuditLog::create([
+                'user_id' => Auth::id(),
+                'action' => $action,
+                'auditable_id' => $user->id,
+                'auditable_type' => User::class,
+                'old_values' => $action !== 'created' ? $user->getOriginal() : null,
+                'new_values' => $action !== 'deleted' ? $user->getChanges() : null,
+            ]);
+        }
     }
 
     /**

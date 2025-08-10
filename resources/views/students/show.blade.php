@@ -37,6 +37,9 @@
                                 <a href="#" @click.prevent="tab = 'activities'" :class="{ 'border-indigo-500 text-indigo-600': tab === 'activities' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
                                     Activities
                                 </a>
+                                <a href="#" @click.prevent="tab = 'admin_actions'" :class="{ 'border-indigo-500 text-indigo-600': tab === 'admin_actions' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                                    Admin Actions
+                                </a>
                                 @if(in_array(Auth::user()->role, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]))
                                 <a href="{{ route('students.health-record.edit', $student) }}" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
                                     Manage Health Record
@@ -130,6 +133,33 @@
                             @else
                                 <p class="text-gray-500">This student is not a member of any clubs.</p>
                             @endif
+                        </div>
+
+                        <!-- Admin Actions Tab Content -->
+                        <div x-show="tab === 'admin_actions'" class="mt-6" x-cloak>
+                             <h4 class="text-lg font-semibold text-gray-800 mb-4">Administrative Actions</h4>
+                             @if(!$student->is_alumni)
+                                <div class="p-4 border rounded-lg bg-gray-50">
+                                    <h5 class="font-semibold">Transition to Alumni</h5>
+                                    <p class="text-sm text-gray-600 mb-4">This will mark the student as graduated and move them to the alumni network. This action cannot be easily undone.</p>
+                                    <form action="{{ route('students.graduate', $student) }}" method="POST">
+                                        @csrf
+                                        <div class="flex items-end space-x-4">
+                                            <div>
+                                                <x-input-label for="graduation_year" :value="__('Graduation Year')" />
+                                                <x-text-input id="graduation_year" type="number" name="graduation_year" :value="date('Y')" required />
+                                            </div>
+                                            <div>
+                                                <x-danger-button type="submit">
+                                                    Graduate Student
+                                                </x-danger-button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                             @else
+                                <p class="text-gray-600">This user is already an alumnus (Graduated {{ $student->graduation_year }}).</p>
+                             @endif
                         </div>
 
                     </div>

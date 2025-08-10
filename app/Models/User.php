@@ -30,6 +30,8 @@ class User extends Authenticatable
         'phone_number',
         'photo',
         'status',
+        'graduation_year',
+        'is_alumni',
         'email',
         'password',
     ];

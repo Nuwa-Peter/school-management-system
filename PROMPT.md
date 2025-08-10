@@ -55,30 +55,46 @@ Develop a robust and user-friendly web-based School Management System for St. Jo
 - [x] Report Card Generation (PDF with Photo & QR Code).
 - [x] ID Card Generation (PDF with Photo, LIN, Dates & QR Code).
 
+### Phase 5: Financial Management (Complete)
+- [x] Fee Structure Management (CRUD for fee types).
+- [x] Invoice Generation system (per student, based on class).
+- [x] Payment Recording (manual entry by bursar).
+- [x] Expense Tracking module.
+- [x] Financial Reports (Outstanding Balances, Payment Summaries, Income/Expenditure).
+- [x] Invoice Export to PDF and Excel.
+
+### Phase 6: Student Welfare & Co-curriculars (Complete)
+- [x] Discipline & Conduct Log (integrated into student profile).
+- [x] Health & Medical Records management.
+- [x] Dormitory / Hostel Management (CRUD for dorms and rooms).
+- [x] Room Assignment system for students.
+- [x] Extracurricular Activity Management (CRUD for clubs and memberships).
+
+### Phase 7: Library & Resource Management (Complete)
+- [x] Digital Library System with book catalog.
+- [x] Book Checkout / Check-in system with basic fine calculation.
+- [x] Resource Booking System with interactive calendar view.
+- [x] General Inventory Management for school assets.
+
+### Phase 8: Enhanced Portals & Engagement (Complete)
+- [x] Parent & Student database relationships established.
+- [x] Dedicated Parent Portal dashboard.
+- [x] Dedicated Student Portal dashboard.
+- [x] Digital Notice Board (Announcements module).
+- [x] Role-aware sidebar navigation for all user types.
+
 ---
 
-## Next Steps: Phase 4 Plan
+## Next Steps: Phase 9 & 10 Plan
 
-### Phase 4: Communication & Advanced Features
+### Phase 9: AI-Powered Academic & Financial Intelligence
 
-1.  ***Communication Module:***
-    *   Integrate with an SMS gateway API.
-    *   Configure email services for bulk sending.
-    *   Build the UI for the Headteacher to compose and send bulk SMS and email messages to parents and teachers.
+1.  ***Predictive Student Performance Model:*** Identify at-risk students using PHP-ML.
+2.  ***Subject Performance Analysis:*** Identify subjects where students are consistently struggling.
 
-2.  ***Teacher Attendance (QR Code):***
-    *   Create the database table and model for attendance records.
-    *   Generate a unique, perhaps daily, QR code that teachers can scan.
-    *   Build the controller logic to record check-in and check-out timestamps.
-    *   Create the UI for the Headteacher and Bursar to view attendance records and track latecomers.
+### Phase 10: Advanced Administration & System Integrity
 
-3.  ***Content Sharing (Video Uploads):***
-    *   Set up file storage for large video files.
-    *   Create the database table and model for videos.
-    *   Build the UI for teachers to upload educational videos.
-    *   Build the UI for students to view videos assigned to their class/stream.
-
-4.  ***Real-time Chat (Teachers):***
-    *   Configure Laravel Echo and Pusher for real-time events.
-    *   Build the chat UI component.
-    *   Implement the backend logic for sending, receiving, and storing messages.
+1.  ***System Audit Trail:*** Create a secure log of all critical actions performed in the system.
+2.  ***Alumni Network Module:*** Maintain a connection with students after they graduate.
+3.  ***Advanced Timetabling Module:*** Automate the creation of the school's master timetable.
+4.  ***Transportation Module:*** Manage the school's transportation services.
