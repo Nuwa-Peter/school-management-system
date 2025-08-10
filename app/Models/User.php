@@ -76,6 +76,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Stream::class, 'stream_user');
     }
 
+    public function dormitoryRoom()
+    {
+        return $this->belongsToMany(DormitoryRoom::class, 'dormitory_room_user');
+    }
+
     /**
      * Get the URL for the user's avatar.
      */

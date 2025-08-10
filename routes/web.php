@@ -107,6 +107,52 @@ Route::middleware('auth')->group(function () {
         Route::get('reports/income-vs-expenditure', [ReportController::class, 'incomeVsExpenditure'])->name('reports.income-vs-expenditure');
     });
 
+    // Library Management
+    Route::group(['middleware' => ['role:root,headteacher,librarian']], function () {
+        Route::resource('books', BookController::class);
+        Route::get('checkouts', [BookCheckoutController::class, 'index'])->name('checkouts.index');
+        Route::get('checkouts/create', [BookCheckoutController::class, 'create'])->name('checkouts.create');
+        Route::post('checkouts', [BookCheckoutController::class, 'store'])->name('checkouts.store');
+        Route::patch('checkouts/{checkout}', [BookCheckoutController::class, 'update'])->name('checkouts.update');
+    });
+
+    // Resource & Inventory Management
+    Route::group(['middleware' => 'role:root,headteacher,bursar'], function() {
+        Route::resource('inventory', InventoryController::class);
+    });
+    Route::group(['middleware' => 'role:root,headteacher'], function() {
+        Route::resource('resources', ResourceController::class);
+    });
+    Route::group(['middleware' => 'role:root,headteacher,teacher'], function() {
+        Route::get('bookings', [BookingController::class, 'index'])->name('bookings.index');
+        Route::post('bookings', [BookingController::class, 'store'])->name('bookings.store');
+        Route::delete('bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+    });
+
+    // Welfare, Activities & Announcements
+    Route::group(['middleware' => ['role:root,headteacher']], function () {
+        Route::resource('dormitories', DormitoryController::class);
+        Route::post('dormitories/{dormitory}/rooms', [DormitoryController::class, 'storeRoom'])->name('dormitories.rooms.store');
+        Route::delete('dormitory-rooms/{room}', [DormitoryController::class, 'destroyRoom'])->name('dormitory-rooms.destroy');
+
+        Route::resource('room-assignments', RoomAssignmentController::class)->only(['index', 'store']);
+        // Custom route for un-assigning
+        Route::delete('room-assignments/{userId}/{roomId}', [RoomAssignmentController::class, 'destroy'])->name('room-assignments.destroy');
+
+        Route::resource('clubs', ClubController::class);
+        Route::post('clubs/{club}/members', [ClubController::class, 'addMember'])->name('clubs.members.store');
+        Route::delete('clubs/{club}/members/{member}', [ClubController::class, 'removeMember'])->name('clubs.members.destroy');
+
+        Route::resource('announcements', AnnouncementController::class);
+    });
+
+    // Communication
+    Route::group(['middleware' => ['role:root,headteacher']], function () {
+        Route::get('bulk-messages/create', [\App\Http\Controllers\BulkMessageController::class, 'create'])->name('bulk-messages.create');
+        Route::post('bulk-messages', [\App\Http\Controllers\BulkMessageController::class, 'store'])->name('bulk-messages.store');
+    });
+
+
     // Document Generation
     Route::group(['middleware' => ['role:root,headteacher'], 'prefix' => 'documents', 'as' => 'documents.'], function () {
         Route::get('select-id-card', [DocumentController::class, 'selectIdCard'])->name('id-card.select');
@@ -117,10 +163,16 @@ Route::middleware('auth')->group(function () {
 
     // Admin-only
     Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:root,headteacher']], function () {
+        Route::get('ai-reports', [\App\Http\Controllers\AiController::class, 'index'])->name('ai.index');
         // Routes for AuditLog and Alumni were removed as their controllers do not exist yet.
         Route::get('/chat', [ChatAdminController::class, 'index'])->name('chat.index');
         Route::get('/chat/{channel}', [ChatAdminController::class, 'showConversation'])->name('chat.show');
         Route::delete('/chat/messages/{messageId}', [ChatAdminController::class, 'forceDelete'])->name('chat.messages.delete');
+
+        Route::get('backups', [\App\Http\Controllers\BackupController::class, 'index'])->name('backups.index');
+        Route::post('backups', [\App\Http\Controllers\BackupController::class, 'store'])->name('backups.store');
+        Route::get('backups/{fileName}/download', [\App\Http\Controllers\BackupController::class, 'download'])->name('backups.download');
+        Route::delete('backups/{fileName}', [\App\Http\Controllers\BackupController::class, 'destroy'])->name('backups.destroy');
     });
 
     // Teacher-specific
