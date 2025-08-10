@@ -75,4 +75,20 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Stream::class, 'stream_user');
     }
+
+    /**
+     * Get the children of this user (if they are a parent).
+     */
+    public function children(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'parent_student', 'parent_id', 'student_id');
+    }
+
+    /**
+     * Get the parents of this user (if they are a student).
+     */
+    public function parents(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'parent_student', 'student_id', 'parent_id');
+    }
 }

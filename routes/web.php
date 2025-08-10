@@ -155,6 +155,21 @@ Route::middleware('auth')->group(function () {
     });
 
     // Communication
+    Route::group(['middleware' => ['auth', 'role:root,headteacher']], function() {
+        Route::resource('announcements', \App\Http\Controllers\AnnouncementController::class)->except('show');
+    });
+
+    // Portals
+    Route::group(['middleware' => ['auth']], function () {
+        Route::get('/parent/dashboard', [\App\Http\Controllers\ParentPortalController::class, 'dashboard'])
+            ->middleware(['role:parent', 'parent.linked'])
+            ->name('parent.dashboard');
+
+        Route::get('/student/dashboard', [\App\Http\Controllers\StudentPortalController::class, 'dashboard'])
+            ->middleware('role:student')
+            ->name('student.dashboard');
+    });
+
     Route::get('communications/create', [CommunicationController::class, 'create'])->name('communications.create')->middleware('role:root,headteacher');
     Route::post('communications', [CommunicationController::class, 'send'])->name('communications.send')->middleware('role:root,headteacher');
 
