@@ -10,12 +10,8 @@ use App\Http\Controllers\TeacherAssignmentController;
 use App\Http\Controllers\MarkController;
 use App\Http\Controllers\StudentAssignmentController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\CommunicationController;
-use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\DirectMessageController;
-use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ChatAdminController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\NotificationController;
@@ -26,22 +22,19 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\DisciplineLogController;
-use App\Http\Controllers\HealthRecordController;
 use App\Http\Controllers\DormitoryController;
 use App\Http\Controllers\RoomAssignmentController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookCheckoutController;
 use App\Http\Controllers\ResourceController;
-use App\Http\Controllers\ResourceBookingController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\AiController;
-use App\Http\Controllers\AlumniController;
-use App\Http\Controllers\AuditLogController;
-use App\Http\Controllers\ParentPortalController;
-use App\Http\Controllers\StudentPortalController;
+use App\Http\Controllers\BackupController;
+use App\Http\Controllers\BulkMessageController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\ExamController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -52,17 +45,15 @@ Route::get('/about', function () {
 })->name('about');
 
 Route::get('/dashboard', function () {
-    $userRole = auth()->user()->role->value;
-    if ($userRole === 'student') {
+    $userRole = auth()->user()->role;
+    if ($userRole === \App\Enums\Role::STUDENT) {
         return redirect()->route('student.dashboard');
     }
-    if ($userRole === 'parent') {
+    if ($userRole === \App\Enums\Role::PARENT) {
         return redirect()->route('parent.dashboard');
     }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -71,13 +62,12 @@ Route::middleware('auth')->group(function () {
 
     // User Management
     Route::group(['middleware' => ['role:root,headteacher']], function () {
-        Route::get('users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
-        Route::get('users/create', [\App\Http\Controllers\UserController::class, 'create'])->name('users.create');
-        Route::post('users', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
-        Route::get('users/{user}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
-        Route::patch('users/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
-        Route::delete('users/{user}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
-        Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::get('users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('users', [UserController::class, 'store'])->name('users.store');
+        Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::patch('users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::resource('class-levels', ClassLevelController::class);
         Route::resource('class-levels.streams', StreamController::class)->except(['show'])->shallow();
         Route::resource('subjects', SubjectController::class);
@@ -90,9 +80,8 @@ Route::middleware('auth')->group(function () {
     // Student Management
     Route::group(['middleware' => ['role:root,headteacher']], function () {
         Route::get('students', [StudentController::class, 'index'])->name('students.index');
-        Route::get('students/upload', [\App\Http\Controllers\StudentController::class, 'showUploadForm'])->name('students.upload.form');
-        Route::get('students/{student}', [StudentController::class, 'show'])->name('students.show');
-        // The routes for DisciplineLog, HealthRecord, and Alumni were removed as their controllers do not exist yet.
+        Route::get('students/upload', [StudentController::class, 'showUploadForm'])->name('students.upload.form');
+        Route::get('students/template', [StudentController::class, 'downloadTemplate'])->name('students.template');
         Route::get('students/{user}/report-card/{stream}', [StudentController::class, 'generateReportCard'])->name('students.report-card');
         Route::get('students/{user}/id-card', [StudentController::class, 'generateIdCard'])->name('students.id-card');
     });
@@ -103,14 +92,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('expense-categories', ExpenseCategoryController::class)->except(['create', 'show', 'edit']);
         Route::resource('fee-structures', FeeStructureController::class);
         Route::resource('invoices', InvoiceController::class)->except(['edit', 'update']);
-        Route::get('invoices/{invoice}/export/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export.pdf');
-        Route::get('invoices/{invoice}/export/excel', [InvoiceController::class, 'exportExcel'])->name('invoices.export.excel');
         Route::post('invoices/{invoice}/payments', [PaymentController::class, 'store'])->name('invoices.payments.store');
         Route::resource('expenses', ExpenseController::class);
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-        Route::get('reports/outstanding-balances', [ReportController::class, 'outstandingBalances'])->name('reports.outstanding-balances');
-        Route::get('reports/payment-summaries', [ReportController::class, 'paymentSummaries'])->name('reports.payment-summaries');
-        Route::get('reports/income-vs-expenditure', [ReportController::class, 'incomeVsExpenditure'])->name('reports.income-vs-expenditure');
     });
 
     // Library Management
@@ -140,24 +124,19 @@ Route::middleware('auth')->group(function () {
         Route::resource('dormitories', DormitoryController::class);
         Route::post('dormitories/{dormitory}/rooms', [DormitoryController::class, 'storeRoom'])->name('dormitories.rooms.store');
         Route::delete('dormitory-rooms/{room}', [DormitoryController::class, 'destroyRoom'])->name('dormitory-rooms.destroy');
-
         Route::resource('room-assignments', RoomAssignmentController::class)->only(['index', 'store']);
-        // Custom route for un-assigning
         Route::delete('room-assignments/{userId}/{roomId}', [RoomAssignmentController::class, 'destroy'])->name('room-assignments.destroy');
-
         Route::resource('clubs', ClubController::class);
         Route::post('clubs/{club}/members', [ClubController::class, 'addMember'])->name('clubs.members.store');
         Route::delete('clubs/{club}/members/{member}', [ClubController::class, 'removeMember'])->name('clubs.members.destroy');
-
         Route::resource('announcements', AnnouncementController::class);
     });
 
     // Communication
     Route::group(['middleware' => ['role:root,headteacher']], function () {
-        Route::get('bulk-messages/create', [\App\Http\Controllers\BulkMessageController::class, 'create'])->name('bulk-messages.create');
-        Route::post('bulk-messages', [\App\Http\Controllers\BulkMessageController::class, 'store'])->name('bulk-messages.store');
+        Route::get('bulk-messages/create', [BulkMessageController::class, 'create'])->name('bulk-messages.create');
+        Route::post('bulk-messages', [BulkMessageController::class, 'store'])->name('bulk-messages.store');
     });
-
 
     // Document Generation
     Route::group(['middleware' => ['role:root,headteacher'], 'prefix' => 'documents', 'as' => 'documents.'], function () {
@@ -169,16 +148,12 @@ Route::middleware('auth')->group(function () {
 
     // Admin-only
     Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:root,headteacher']], function () {
-        Route::get('ai-reports', [\App\Http\Controllers\AiController::class, 'index'])->name('ai.index');
-        // Routes for AuditLog and Alumni were removed as their controllers do not exist yet.
-        Route::get('/chat', [ChatAdminController::class, 'index'])->name('chat.index');
-        Route::get('/chat/{channel}', [ChatAdminController::class, 'showConversation'])->name('chat.show');
-        Route::delete('/chat/messages/{messageId}', [ChatAdminController::class, 'forceDelete'])->name('chat.messages.delete');
-
-        Route::get('backups', [\App\Http\Controllers\BackupController::class, 'index'])->name('backups.index');
-        Route::post('backups', [\App\Http\Controllers\BackupController::class, 'store'])->name('backups.store');
-        Route::get('backups/{fileName}/download', [\App\Http\Controllers\BackupController::class, 'download'])->name('backups.download');
-        Route::delete('backups/{fileName}', [\App\Http\Controllers\BackupController::class, 'destroy'])->name('backups.destroy');
+        Route::get('ai-reports', [AiController::class, 'index'])->name('ai.index');
+        Route::get('chat', [ChatAdminController::class, 'index'])->name('chat.index');
+        Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
+        Route::post('backups', [BackupController::class, 'store'])->name('backups.store');
+        Route::get('backups/{fileName}/download', [BackupController::class, 'download'])->name('backups.download');
+        Route::delete('backups/{fileName}', [BackupController::class, 'destroy'])->name('backups.destroy');
     });
 
     // Teacher-specific
@@ -194,6 +169,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('teacher/chat', [ChatController::class, 'index'])->name('teacher.chat.index');
 
+    // Add the show route for users at the end to avoid conflicts
+    Route::get('users/{user}', [UserController::class, 'show'])->name('users.show');
 });
 
 require __DIR__.'/auth.php';
