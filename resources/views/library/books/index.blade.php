@@ -53,11 +53,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $book->available_quantity }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a href="{{ route('books.edit', $book) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                            <form action="{{ route('books.destroy', $book) }}" method="POST" class="inline ml-4" onsubmit="return confirm('Are you sure you want to delete this book?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                                            </form>
+                                            <button @click.prevent="$dispatch('open-delete-modal', { action: '{{ route('books.destroy', $book) }}' })" class="text-red-600 hover:text-red-900 ml-4">Delete</button>
                                         </td>
                                     </tr>
                                 @empty

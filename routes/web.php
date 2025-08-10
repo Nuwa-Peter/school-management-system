@@ -71,6 +71,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('class-levels', ClassLevelController::class);
         Route::resource('class-levels.streams', StreamController::class)->except(['show'])->shallow();
         Route::resource('subjects', SubjectController::class);
+        Route::get('subjects/{subject}/manage-papers', [SubjectController::class, 'managePapers'])->name('subjects.manage-papers');
+        Route::post('subjects/{subject}/papers', [SubjectController::class, 'storePapers'])->name('subjects.papers.store');
         Route::get('teacher-assignments/create', [TeacherAssignmentController::class, 'create'])->name('teacher-assignments.create');
         Route::post('teacher-assignments', [TeacherAssignmentController::class, 'store'])->name('teacher-assignments.store');
         Route::get('student-assignments', [StudentAssignmentController::class, 'index'])->name('student-assignments.index');
@@ -80,8 +82,13 @@ Route::middleware('auth')->group(function () {
     // Student Management
     Route::group(['middleware' => ['role:root,headteacher']], function () {
         Route::get('students', [StudentController::class, 'index'])->name('students.index');
+        Route::post('students/import', [StudentController::class, 'import'])->name('students.import');
+        Route::post('students/{user}/photo', [StudentController::class, 'updatePhoto'])->name('students.photo.update');
+        Route::get('students/search', [StudentController::class, 'search'])->name('students.search');
         Route::get('students/upload', [StudentController::class, 'showUploadForm'])->name('students.upload.form');
         Route::get('students/template', [StudentController::class, 'downloadTemplate'])->name('students.template');
+        Route::get('students/export/pdf', [StudentController::class, 'exportPdf'])->name('students.export.pdf');
+        Route::get('students/export/excel', [StudentController::class, 'exportExcel'])->name('students.export.excel');
         Route::get('students/{user}/report-card/{stream}', [StudentController::class, 'generateReportCard'])->name('students.report-card');
         Route::get('students/{user}/id-card', [StudentController::class, 'generateIdCard'])->name('students.id-card');
     });

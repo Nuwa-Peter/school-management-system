@@ -144,14 +144,6 @@
                         </x-slot>
                     </x-sidebar-dropdown>
                 </li>
-                <li>
-                    <x-sidebar-dropdown :active="request()->routeIs(['admin.chat.*'])">
-                        <x-slot name="trigger"><x-heroicon-o-chart-bar-square class="w-6 h-6 mr-3" /><span>Advanced</span></x-slot>
-                        <x-slot name="content">
-                            <a href="{{ route('admin.chat.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Admin Chat</a>
-                        </x-slot>
-                    </x-sidebar-dropdown>
-                </li>
                 @endif
 
                 @if(in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::TEACHER, \App\Enums\Role::HEADTEACHER]))
