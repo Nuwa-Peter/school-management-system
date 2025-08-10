@@ -59,6 +59,22 @@
                 </x-sidebar-dropdown>
             </li>
             @endif
+            @if(in_array(\Illuminate\Support\Facades\Auth::user()->role, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER, \App\Enums\Role::LIBRARIAN]))
+            <li class="mb-2">
+                <x-sidebar-dropdown :active="request()->routeIs('books.*') || request()->routeIs('checkouts.*') || request()->routeIs('inventory.*') || request()->routeIs('bookings.*')">
+                    <x-slot name="trigger">
+                        <x-heroicon-o-book-open class="w-6 h-6 mr-3" />
+                        <span>Library & Resources</span>
+                    </x-slot>
+                    <x-slot name="content">
+                        <a href="{{ route('books.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Book Catalog</a>
+                        <a href="{{ route('checkouts.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Book Checkouts</a>
+                        <a href="{{ route('bookings.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Resource Bookings</a>
+                        <a href="{{ route('inventory.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">General Inventory</a>
+                    </x-slot>
+                </x-sidebar-dropdown>
+            </li>
+            @endif
             @if(in_array(\Illuminate\Support\Facades\Auth::user()->role, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]))
             <li class="mb-2">
                 <x-sidebar-dropdown :active="request()->routeIs('dormitories.*') || request()->routeIs('room-assignments.*') || request()->routeIs('clubs.*')">
@@ -139,4 +155,10 @@
             @endif
         </ul>
     </nav>
+    <div class="mt-auto pt-4 border-t border-gray-700">
+        <a href="{{ route('about') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('about') ? 'bg-gray-700' : '' }}">
+            <x-heroicon-o-information-circle class="w-6 h-6 mr-3" />
+            <span>About</span>
+        </a>
+    </div>
 </aside>

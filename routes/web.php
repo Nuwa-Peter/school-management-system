@@ -25,6 +25,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -128,6 +132,26 @@ Route::middleware('auth')->group(function () {
         Route::resource('clubs', \App\Http\Controllers\ClubController::class);
         Route::post('clubs/{club}/members', [\App\Http\Controllers\ClubController::class, 'addMember'])->name('clubs.members.store');
         Route::delete('clubs/{club}/members/{student}', [\App\Http\Controllers\ClubController::class, 'removeMember'])->name('clubs.members.destroy');
+    });
+
+    // Library & Inventory Management
+    Route::group(['middleware' => ['auth', 'role:root,headteacher,librarian']], function () {
+        Route::resource('books', \App\Http\Controllers\BookController::class);
+        Route::get('checkouts', [\App\Http\Controllers\BookCheckoutController::class, 'index'])->name('checkouts.index');
+        Route::get('checkouts/create', [\App\Http\Controllers\BookCheckoutController::class, 'create'])->name('checkouts.create');
+        Route::post('checkouts', [\App\Http\Controllers\BookCheckoutController::class, 'store'])->name('checkouts.store');
+        Route::patch('checkouts/{checkout}', [\App\Http\Controllers\BookCheckoutController::class, 'update'])->name('checkouts.update');
+        Route::resource('inventory', \App\Http\Controllers\InventoryController::class);
+    });
+
+    // Resource Management
+    Route::group(['middleware' => ['auth', 'role:root,headteacher']], function () {
+        Route::resource('resources', \App\Http\Controllers\ResourceController::class)->except(['create', 'show', 'edit']);
+    });
+    Route::group(['middleware' => ['auth', 'role:root,headteacher,teacher']], function () {
+        Route::get('bookings', [\App\Http\Controllers\ResourceBookingController::class, 'index'])->name('bookings.index');
+        Route::post('bookings', [\App\Http\Controllers\ResourceBookingController::class, 'store'])->name('bookings.store');
+        Route::delete('bookings/{booking}', [\App\Http\Controllers\ResourceBookingController::class, 'destroy'])->name('bookings.destroy');
     });
 
     // Communication
