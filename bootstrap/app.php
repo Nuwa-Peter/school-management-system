@@ -14,7 +14,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckUserRole::class,
-            'parent.linked' => \App\Http\Middleware\EnsureParentIsLinked::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

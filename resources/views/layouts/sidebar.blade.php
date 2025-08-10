@@ -1,25 +1,28 @@
-<aside class="w-64 bg-gray-800 text-white h-screen p-4 flex flex-col">
-    <div class="mb-10 text-center flex-shrink-0">
+<aside class="w-64 bg-gray-800 text-white h-screen flex flex-col">
+    <div class="p-4 text-center flex-shrink-0">
         <a href="{{ route('dashboard') }}">
             <img src="{{ asset('images/logo.png') }}" alt="School Logo" class="w-20 h-20 mx-auto mb-2 rounded-full">
             <h1 class="text-xl font-bold text-white">St. Joseph's VSS</h1>
         </a>
     </div>
-    <nav class="flex-grow flex flex-col overflow-y-auto">
-        @php
-            $userRole = auth()->user()->role;
-            $isAdmin = in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]);
-        @endphp
-        <ul class="flex-grow">
+
+    @php
+        $user = auth()->user();
+        $userRole = $user->role;
+        $isAdmin = in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]);
+    @endphp
+
+    <nav class="flex-1 overflow-y-auto px-4">
+        <ul class="space-y-2">
             {{-- ========== STUDENT MENU ========== --}}
             @if($userRole === \App\Enums\Role::STUDENT)
-                <li class="mb-2">
+                <li>
                     <a href="{{ route('student.dashboard') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('student.dashboard') ? 'bg-gray-700' : '' }}">
                         <x-heroicon-o-home class="w-6 h-6 mr-3" />
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <li class="mb-2">
+                <li>
                     <a href="{{ route('videos.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('videos.index') ? 'bg-gray-700' : '' }}">
                         <x-heroicon-o-video-camera class="w-6 h-6 mr-3" />
                         <span>Video Library</span>
@@ -28,7 +31,7 @@
 
             {{-- ========== PARENT MENU ========== --}}
             @elseif($userRole === \App\Enums\Role::PARENT)
-                <li class="mb-2">
+                <li>
                      <a href="{{ route('parent.dashboard') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('parent.dashboard') ? 'bg-gray-700' : '' }}">
                         <x-heroicon-o-home class="w-6 h-6 mr-3" />
                         <span>Dashboard</span>
@@ -37,7 +40,7 @@
 
             {{-- ========== ADMIN & STAFF MENU ========== --}}
             @else
-                <li class="mb-2">
+                <li>
                     <a href="{{ route('dashboard') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('dashboard') ? 'bg-gray-700' : '' }}">
                         <x-heroicon-o-home class="w-6 h-6 mr-3" />
                         <span>Dashboard</span>
@@ -45,7 +48,7 @@
                 </li>
 
                 @if($isAdmin)
-                    <li class="mb-2">
+                    <li>
                         <x-sidebar-dropdown :active="request()->routeIs(['users.*', 'students.*', 'alumni.*'])">
                             <x-slot name="trigger"><x-heroicon-o-users class="w-6 h-6 mr-3" /><span>User Management</span></x-slot>
                             <x-slot name="content">
@@ -56,35 +59,52 @@
                             </x-slot>
                         </x-sidebar-dropdown>
                     </li>
-                    <li class="mb-2">
-                        <a href="{{ route('class-levels.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('class-levels.*') ? 'bg-gray-700' : '' }}">
-                            <x-heroicon-o-academic-cap class="w-6 h-6 mr-3" />
-                            <span>Classes & Streams</span>
-                        </a>
+                    <li>
+                        <x-sidebar-dropdown :active="request()->routeIs(['class-levels.*', 'subjects.*', 'teacher-assignments.*', 'student-assignments.*'])">
+                            <x-slot name="trigger"><x-heroicon-o-academic-cap class="w-6 h-6 mr-3" /><span>Academics</span></x-slot>
+                            <x-slot name="content">
+                                <a href="{{ route('class-levels.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Classes & Streams</a>
+                                <a href="{{ route('subjects.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Subjects</a>
+                                <a href="{{ route('teacher-assignments.create') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Assign Teachers</a>
+                                <a href="{{ route('student-assignments.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Assign Students</a>
+                            </x-slot>
+                        </x-sidebar-dropdown>
                     </li>
                 @endif
 
                 @if(in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER, \App\Enums\Role::BURSAR]))
-                <li class="mb-2">
-                    <x-sidebar-dropdown :active="request()->routeIs(['invoices.*', 'fee-structures.*', 'expenses.*', 'reports.*'])">
+                <li>
+                    <x-sidebar-dropdown :active="request()->routeIs(['invoices.*', 'fee-structures.*', 'expenses.*', 'reports.*', 'fee-categories.*', 'expense-categories.*'])">
                         <x-slot name="trigger"><x-heroicon-o-banknotes class="w-6 h-6 mr-3" /><span>Finance</span></x-slot>
                         <x-slot name="content">
                             <a href="{{ route('invoices.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Invoices</a>
                             <a href="{{ route('fee-structures.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Fee Structures</a>
                             <a href="{{ route('expenses.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Expenses</a>
                             <a href="{{ route('reports.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Reports</a>
+                            <a href="{{ route('fee-categories.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md border-t border-gray-600 mt-1 pt-1">Fee Categories</a>
+                            <a href="{{ route('expense-categories.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Expense Categories</a>
                         </x-slot>
                     </x-sidebar-dropdown>
                 </li>
                 @endif
 
                 @if(in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER, \App\Enums\Role::LIBRARIAN]))
-                <li class="mb-2">
-                    <x-sidebar-dropdown :active="request()->routeIs(['books.*', 'checkouts.*', 'inventory.*', 'bookings.*'])">
-                        <x-slot name="trigger"><x-heroicon-o-book-open class="w-6 h-6 mr-3" /><span>Library & Resources</span></x-slot>
+                <li>
+                    <x-sidebar-dropdown :active="request()->routeIs(['books.*', 'checkouts.*'])">
+                        <x-slot name="trigger"><x-heroicon-o-book-open class="w-6 h-6 mr-3" /><span>Library</span></x-slot>
                         <x-slot name="content">
                             <a href="{{ route('books.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Book Catalog</a>
                             <a href="{{ route('checkouts.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Book Checkouts</a>
+                        </x-slot>
+                    </x-sidebar-dropdown>
+                </li>
+                @endif
+
+                @if(in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER, \App\Enums\Role::LIBRARIAN, \App\Enums\Role::TEACHER]))
+                 <li>
+                    <x-sidebar-dropdown :active="request()->routeIs(['inventory.*', 'bookings.*'])">
+                        <x-slot name="trigger"><x-heroicon-o-archive-box class="w-6 h-6 mr-3" /><span>Resources</span></x-slot>
+                        <x-slot name="content">
                              <a href="{{ route('inventory.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">General Inventory</a>
                             <a href="{{ route('bookings.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Resource Bookings</a>
                         </x-slot>
@@ -93,7 +113,7 @@
                 @endif
 
                 @if($isAdmin)
-                <li class="mb-2">
+                <li>
                     <x-sidebar-dropdown :active="request()->routeIs(['dormitories.*', 'room-assignments.*', 'clubs.*'])">
                         <x-slot name="trigger"><x-heroicon-o-user-group class="w-6 h-6 mr-3" /><span>Welfare & Activities</span></x-slot>
                         <x-slot name="content">
@@ -103,41 +123,78 @@
                         </x-slot>
                     </x-sidebar-dropdown>
                 </li>
-                <li class="mb-2">
+                <li>
+                    <x-sidebar-dropdown :active="request()->routeIs('documents.*')">
+                        <x-slot name="trigger"><x-heroicon-o-document-text class="w-6 h-6 mr-3" /><span>Documents</span></x-slot>
+                        <x-slot name="content">
+                            <a href="{{ route('documents.id-card.select') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Generate ID Card</a>
+                            <a href="{{ route('documents.report-card.select') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Generate Report Card</a>
+                        </x-slot>
+                    </x-sidebar-dropdown>
+                </li>
+                <li>
                     <a href="{{ route('announcements.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('announcements.*') ? 'bg-gray-700' : '' }}">
                         <x-heroicon-o-megaphone class="w-6 h-6 mr-3" />
                         <span>Announcements</span>
                     </a>
                 </li>
-                @endif
-
-                @if(in_array($userRole, [\App\Enums\Role::TEACHER, \App\Enums\Role::HEADTEACHER]))
-                <li class="mb-2">
-                    <a href="{{ route('teacher.chat.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('teacher.chat.index') ? 'bg-gray-700' : '' }}">
-                        <x-heroicon-o-chat-bubble-left-right class="w-6 h-6 mr-3" />
-                        <span>Chat</span>
-                    </a>
-                </li>
-                @endif
-
-                @if($isAdmin)
-                <li class="mb-2">
+                <li>
                     <x-sidebar-dropdown :active="request()->routeIs(['ai.*', 'admin.*'])">
                         <x-slot name="trigger"><x-heroicon-o-chart-bar-square class="w-6 h-6 mr-3" /><span>Advanced</span></x-slot>
                         <x-slot name="content">
                             <a href="{{ route('ai.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">AI Reports</a>
                             <a href="{{ route('admin.audit-log.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Audit Trail</a>
+                            <a href="{{ route('admin.chat.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Admin Chat</a>
+                        </x-slot>
+                    </x-sidebar-dropdown>
+                </li>
+                @endif
+
+                @if(in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::TEACHER, \App\Enums\Role::HEADTEACHER]))
+                <li>
+                     <x-sidebar-dropdown :active="request()->routeIs(['teacher.chat.*'])">
+                        <x-slot name="trigger"><x-heroicon-o-chat-bubble-left-right class="w-6 h-6 mr-3" /><span>Communication</span></x-slot>
+                        <x-slot name="content">
+                            <a href="{{ route('teacher.chat.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Chat</a>
+                        </x-slot>
+                    </x-sidebar-dropdown>
+                </li>
+                @endif
+
+                @if(in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER, \App\Enums\Role::TEACHER]))
+                <li>
+                    <x-sidebar-dropdown :active="request()->routeIs(['marks.*', 'exams.*'])">
+                        <x-slot name="trigger"><x-heroicon-o-pencil-square class="w-6 h-6 mr-3" /><span>Examinations</span></x-slot>
+                        <x-slot name="content">
+                            <a href="{{ route('exams.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">View Set Exams</a>
+                            <a href="{{ route('exams.create') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Set Exam</a>
+                            <a href="{{ route('marks.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md border-t border-gray-600 mt-1 pt-1">Mark Entry</a>
                         </x-slot>
                     </x-sidebar-dropdown>
                 </li>
                 @endif
             @endif
         </ul>
-        <div class="mt-auto">
-            <a href="{{ route('about') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('about') ? 'bg-gray-700' : '' }}">
-                <x-heroicon-o-information-circle class="w-6 h-6 mr-3" />
-                <span>About</span>
-            </a>
-        </div>
     </nav>
+
+    <div class="p-4 flex-shrink-0 border-t border-gray-700">
+        <div x-data="{ open: false }" class="relative">
+            <button @click="open = !open" class="flex items-center w-full p-2 text-gray-300 hover:bg-gray-700 rounded-md">
+                <img class="w-8 h-8 rounded-full mr-3" src="{{ $user->getAvatarUrl() }}" alt="User Avatar">
+                <span class="flex-1 text-left">{{ $user->name }}</span>
+                 <x-heroicon-o-chevron-up-down class="w-5 h-5" />
+            </button>
+            <div x-show="open" @click.away="open = false" x-transition class="absolute bottom-full w-full mb-2 bg-gray-750 rounded-md shadow-lg" style="display: none;">
+                <a href="{{ route('profile.edit') }}" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">My Profile</a>
+                <a href="{{ route('notifications.index') }}" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">Notifications</a>
+                <a href="{{ route('about') }}" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">About</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </aside>

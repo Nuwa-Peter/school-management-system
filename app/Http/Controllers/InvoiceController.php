@@ -40,8 +40,6 @@ class InvoiceController extends Controller
      */
     public function create(): View
     {
-        // We need a way to select students. A search box would be good.
-        // For now, we'll just pass all students. For a large school, this should be an AJAX search.
         $students = User::where('role', 'student')->orderBy('last_name')->get();
         return view('finance.invoices.create', compact('students'));
     }
@@ -65,7 +63,6 @@ class InvoiceController extends Controller
 
         $classLevel = $student->streams->first()->classLevel;
 
-        // Find all applicable fee structures for the student's class
         $feeStructures = FeeStructure::where('class_level_id', $classLevel->id)
             ->where('academic_year', $request->academic_year)
             ->get();
@@ -76,10 +73,8 @@ class InvoiceController extends Controller
 
         DB::beginTransaction();
         try {
-            // Calculate total amount
             $totalAmount = $feeStructures->sum('amount');
 
-            // Create the invoice
             $invoice = Invoice::create([
                 'user_id' => $student->id,
                 'total_amount' => $totalAmount,
@@ -89,7 +84,6 @@ class InvoiceController extends Controller
                 'status' => 'unpaid',
             ]);
 
-            // Create invoice items
             foreach ($feeStructures as $structure) {
                 $invoice->items()->create([
                     'fee_structure_id' => $structure->id,
@@ -122,7 +116,6 @@ class InvoiceController extends Controller
      */
     public function destroy(Invoice $invoice): RedirectResponse
     {
-        // For safety, only allow deletion of unpaid invoices.
         if ($invoice->status !== 'unpaid') {
             return redirect()->route('invoices.show', $invoice)
                 ->with('error', 'Cannot delete an invoice that has payments or is not in unpaid status.');
@@ -132,24 +125,5 @@ class InvoiceController extends Controller
 
         return redirect()->route('invoices.index')
             ->with('success', 'Invoice deleted successfully.');
-    }
-
-    /**
-     * Export the specified invoice to PDF.
-     */
-    public function exportPdf(Invoice $invoice)
-    {
-        $invoice->load(['student', 'items', 'payments']);
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('finance.invoices.invoice_pdf', compact('invoice'));
-        return $pdf->download('invoice-' . $invoice->id . '.pdf');
-    }
-
-    /**
-     * Export the specified invoice to Excel.
-     */
-    public function exportExcel(Invoice $invoice)
-    {
-        $invoice->load(['student', 'items', 'payments']);
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\InvoiceExport($invoice), 'invoice-' . $invoice->id . '.xlsx');
     }
 }

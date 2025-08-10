@@ -79,21 +79,6 @@
                     </form>
                 </div>
             </div>
-
-            <div class="mt-8 bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-red-600">Danger Zone</h3>
-                    <div class="mt-4">
-                        <form action="{{ route('users.reset-password', $user) }}" method="POST" onsubmit="return confirm('Are you sure you want to reset this user\'s password to the default value?');">
-                            @csrf
-                            <x-danger-button type="submit">
-                                Reset Password
-                            </x-danger-button>
-                            <p class="inline-block ml-4 text-sm text-gray-600">This will reset the user's password to "password".</p>
-                        </form>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </x-app-layout>

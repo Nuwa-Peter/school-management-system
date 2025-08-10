@@ -83,15 +83,12 @@
                                             @endforeach
                                         </td>
                                         <td class="py-3 px-4 flex items-center space-x-4">
-                                            <a href="{{ route('students.show', $student) }}" class="text-gray-600 hover:text-gray-900" title="View Profile">
-                                                <x-heroicon-o-eye class="w-5 h-5" />
-                                            </a>
-                                            <a href="{{ route('users.edit', $student) }}" class="text-blue-600 hover:text-blue-900" title="Edit Student">
-                                                <x-heroicon-o-pencil-square class="w-5 h-5" />
-                                            </a>
                                             <button @click="$dispatch('open-photo-modal', { studentId: {{ $student->id }}, studentName: '{{ $student->name }}' })" class="text-green-600 hover:text-green-900" title="Upload Photo">
                                                 <x-heroicon-o-arrow-up-on-square class="w-5 h-5" />
                                             </button>
+                                            <a href="{{ route('users.edit', $student) }}" class="text-blue-600 hover:text-blue-900" title="Edit Student">
+                                                <x-heroicon-o-pencil-square class="w-5 h-5" />
+                                            </a>
                                         </td>
                                     </tr>
                                 @empty
