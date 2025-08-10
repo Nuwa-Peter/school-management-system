@@ -30,48 +30,55 @@ Develop a robust and user-friendly web-based School Management System for St. Jo
 - [x] Project Initialization and Database Setup
 - [x] UI and Authentication Scaffolding (Laravel Breeze)
 - [x] Enhanced User Model with Custom Fields and Roles
-- [x] Automatic Unique ID Generation for Students/Teachers
 - [x] Initial `Root` User Account Seeder
 - [x] Core UI Layout (Sidebar, Top Nav, Footer)
 - [x] Role-Based Access Control (RBAC) Middleware
-- [x] Basic User Management Interface
 
 ### Phase 2: Academic Core (Complete)
-- [x] `other_name` field added to User model.
-- [x] Class & Stream Management (Database, Models, UI)
-- [x] Subject Management (Database, Models, UI)
-- [x] Paper Management (Database, Models, UI)
-- [x] Teacher Assignment System (Backend & UI)
-- [x] Student Assignment System (Backend & UI)
+- [x] Class & Stream Management
+- [x] Subject & Paper Management
+- [x] Teacher & Student Assignment System
 - [x] Mark Entry System for Teachers
-- [x] **New:** Scaffolding for a new "Exams" module (Set Exams, View Exams).
+- [x] **New:** Scaffolding for a new "Exams" module.
 
 ### Phase 3: Student Lifecycle & Documents (Complete)
-- [x] `lin` (Learner Identification Number) field added.
-- [x] PDF and Excel Libraries installed.
-- [x] Student Data Management UI with search & filters.
-- [x] Advanced Photo Upload (File, Preview, Webcam).
-- [x] Bulk Student Upload (Excel).
-- [x] Data Download (PDF & Excel).
-- [x] Report Card Generation (PDF with Photo & QR Code).
-- [x] ID Card Generation (PDF with Photo, LIN, Dates & QR Code).
+- [x] Advanced Student Data Management UI with search, filters, and photo upload.
+- [x] Bulk Student Upload (Excel) & Data Download (PDF & Excel).
+- [x] Report Card & ID Card Generation (PDF with Photo & QR Code).
 
-### Phase 4: Communication & Content (In Progress)
+### Phase 4: Communication & Content (Complete)
 - [x] Real-time Chat for staff communication.
-- [x] Content Sharing via a simple Video Library for students.
-- [ ] Digital Notice Board for school-wide announcements. (Planned)
+- [x] Content Sharing via a simple Video Library.
+- [x] **New:** Bulk Messaging system (Email/SMS).
 
 ### Phase 5: Financial Management (Complete)
-- [x] Fee Category and Expense Category Management.
+- [x] Fee & Expense Category Management.
 - [x] Fee Structure creation system.
-- [x] Automatic Invoice Generation based on class.
-- [x] Manual Payment Recording (Full/Partial).
+- [x] Automatic Invoice Generation and manual payment recording.
 - [x] Expense Recording and Categorization.
 - [x] Financial Reporting (Outstanding Balances, Income vs. Expenditure, etc.).
 
-### Future Phases (Planned)
-- **Phase 6: Student Welfare & Co-curriculars** (Discipline Log, Dormitory Management, Clubs, Health Records)
-- **Phase 7: Library & Resource Management** (Digital Library, Resource Booking, Inventory)
-- **Phase 8: Enhanced Portals** (Parent/Guardian Portal, Student Portal)
-- **Phase 9: AI-Powered Intelligence** (Predictive models, analytics)
-- **Phase 10: Advanced Administration** (Timetabling, Alumni, Audit Trail)
+### Phase 6: Student Welfare & Co-curriculars (Complete)
+- [x] Dormitory / Hostel Management (Dormitories and Rooms).
+- [x] Student Room Assignment System.
+- [x] Extracurricular Activity (Clubs) Management, including memberships.
+- [ ] Discipline & Conduct Log (Planned for future release)
+- [ ] Health & Medical Records (Planned for future release)
+
+### Phase 7: Library & Resource Management (Complete)
+- [x] Digital Library System with Book Catalog (CRUD).
+- [x] Book Checkout and Check-in System.
+- [x] General School Inventory Management (CRUD).
+- [x] Shared Resource Booking System with a calendar view.
+
+### Phase 8: Enhanced Portals & Engagement (In Progress)
+- [x] Digital Notice Board via the "Announcements" module (CRUD).
+- [ ] Dedicated Parent/Guardian Portal (Planned for future release)
+- [ ] Dedicated Student Portal (Planned for future release)
+
+### Phase 9 & 10: Advanced Administration & AI (In Progress)
+- [x] **New:** Automatic Daily Database Backup system with UI for on-demand backups.
+- [x] **New:** Scaffolding for AI-powered reports.
+- [ ] System Audit Trail (Planned for future release)
+- [ ] Alumni Network (Planned for future release)
+- [ ] Advanced Timetabling (Planned for future release)
