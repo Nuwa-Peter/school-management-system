@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('book_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->timestamp('checkout_date');
-            $table->timestamp('due_date');
+            $table->dateTime('checkout_date');
+            $table->dateTime('due_date');
             $table->timestamp('returned_date')->nullable();
             $table->decimal('fine_amount', 8, 2)->nullable();
             $table->foreignId('checked_out_by_id')->constrained('users'); // Librarian
