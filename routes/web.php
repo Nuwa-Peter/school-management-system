@@ -71,7 +71,12 @@ Route::middleware('auth')->group(function () {
 
     // User Management
     Route::group(['middleware' => ['role:root,headteacher']], function () {
-        Route::resource('users', UserController::class)->except(['show']);
+        Route::get('users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+        Route::get('users/create', [\App\Http\Controllers\UserController::class, 'create'])->name('users.create');
+        Route::post('users', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
+        Route::get('users/{user}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
+        Route::patch('users/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
+        Route::delete('users/{user}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
         Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::resource('class-levels', ClassLevelController::class);
         Route::resource('class-levels.streams', StreamController::class)->except(['show'])->shallow();
@@ -85,6 +90,7 @@ Route::middleware('auth')->group(function () {
     // Student Management
     Route::group(['middleware' => ['role:root,headteacher']], function () {
         Route::get('students', [StudentController::class, 'index'])->name('students.index');
+        Route::get('students/upload', [\App\Http\Controllers\StudentController::class, 'showUploadForm'])->name('students.upload.form');
         Route::get('students/{student}', [StudentController::class, 'show'])->name('students.show');
         // The routes for DisciplineLog, HealthRecord, and Alumni were removed as their controllers do not exist yet.
         Route::get('students/{user}/report-card/{stream}', [StudentController::class, 'generateReportCard'])->name('students.report-card');
