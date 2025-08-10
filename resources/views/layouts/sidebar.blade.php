@@ -7,39 +7,54 @@
     </div>
     <nav class="flex-grow overflow-y-auto">
         @php
-            $userRole = Auth::user()->role;
+            $userRole = auth()->user()->role;
             $isAdmin = in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER]);
         @endphp
         <ul>
-            {{-- Common Dashboard Link --}}
-            <li class="mb-2">
-                @if($userRole === \App\Enums\Role::STUDENT)
+            {{-- ========== STUDENT MENU ========== --}}
+            @if($userRole === \App\Enums\Role::STUDENT)
+                <li class="mb-2">
                     <a href="{{ route('student.dashboard') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('student.dashboard') ? 'bg-gray-700' : '' }}">
                         <x-heroicon-o-home class="w-6 h-6 mr-3" />
                         <span>Dashboard</span>
                     </a>
-                @elseif($userRole === \App\Enums\Role::PARENT)
+                </li>
+                <li class="mb-2">
+                    <a href="{{ route('videos.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('videos.index') ? 'bg-gray-700' : '' }}">
+                        <x-heroicon-o-video-camera class="w-6 h-6 mr-3" />
+                        <span>Video Library</span>
+                    </a>
+                </li>
+
+            {{-- ========== PARENT MENU ========== --}}
+            @elseif($userRole === \App\Enums\Role::PARENT)
+                <li class="mb-2">
                      <a href="{{ route('parent.dashboard') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('parent.dashboard') ? 'bg-gray-700' : '' }}">
                         <x-heroicon-o-home class="w-6 h-6 mr-3" />
                         <span>Dashboard</span>
                     </a>
-                @else
+                </li>
+
+            {{-- ========== ADMIN & STAFF MENU ========== --}}
+            @else
+                <li class="mb-2">
                     <a href="{{ route('dashboard') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('dashboard') ? 'bg-gray-700' : '' }}">
                         <x-heroicon-o-home class="w-6 h-6 mr-3" />
                         <span>Dashboard</span>
                     </a>
-                @endif
-            </li>
-
-            {{-- Admin & Staff Menu --}}
-            @if(in_array($userRole, [\App\Enums\Role::ROOT, \App\Enums\Role::HEADTEACHER, \App\Enums\Role::BURSAR, \App\Enums\Role::LIBRARIAN, \App\Enums\Role::TEACHER]))
+                </li>
 
                 @if($isAdmin)
                     <li class="mb-2">
-                        <a href="{{ route('students.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('students.*') ? 'bg-gray-700' : '' }}">
-                            <x-heroicon-o-users class="w-6 h-6 mr-3" />
-                            <span>Student Management</span>
-                        </a>
+                        <x-sidebar-dropdown :active="request()->routeIs(['users.*', 'students.*', 'alumni.*'])">
+                            <x-slot name="trigger"><x-heroicon-o-users class="w-6 h-6 mr-3" /><span>User Management</span></x-slot>
+                            <x-slot name="content">
+                                <a href="{{ route('users.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">All Users</a>
+                                <a href="{{ route('users.create') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Add New User</a>
+                                <a href="{{ route('students.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Student Profiles</a>
+                                <a href="{{ route('alumni.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Alumni Network</a>
+                            </x-slot>
+                        </x-sidebar-dropdown>
                     </li>
                     <li class="mb-2">
                         <a href="{{ route('class-levels.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('class-levels.*') ? 'bg-gray-700' : '' }}">
@@ -94,6 +109,15 @@
                         <span>Announcements</span>
                     </a>
                 </li>
+                <li class="mb-2">
+                    <x-sidebar-dropdown :active="request()->routeIs(['ai.*', 'admin.*'])">
+                        <x-slot name="trigger"><x-heroicon-o-chart-bar-square class="w-6 h-6 mr-3" /><span>Advanced</span></x-slot>
+                        <x-slot name="content">
+                            <a href="{{ route('ai.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">AI Reports</a>
+                            <a href="{{ route('admin.audit-log.index') }}" class="block p-2 text-sm text-gray-300 hover:bg-gray-700 rounded-md">Audit Trail</a>
+                        </x-slot>
+                    </x-sidebar-dropdown>
+                </li>
                 @endif
 
                 @if($userRole === \App\Enums\Role::TEACHER)
@@ -104,36 +128,6 @@
                     </a>
                 </li>
                 @endif
-
-                 @if(in_array($userRole, [\App\Enums\Role::TEACHER, \App\Enums\Role::HEADTEACHER]))
-                <li class="mb-2">
-                    <a href="{{ route('teacher.chat.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('teacher.chat.index') ? 'bg-gray-700' : '' }}">
-                        <x-heroicon-o-chat-bubble-left-right class="w-6 h-6 mr-3" />
-                        <span>Chat</span>
-                    </a>
-                </li>
-                @endif
-
-                @if($isAdmin)
-                 <li class="mb-2">
-                    <a href="{{ route('communications.create') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('communications.create') ? 'bg-gray-700' : '' }}">
-                        <x-heroicon-o-chat-bubble-left-right class="w-6 h-6 mr-3" />
-                        <span>Communications</span>
-                    </a>
-                </li>
-                @endif
-
-            {{-- Student Menu --}}
-            @elseif($userRole === \App\Enums\Role::STUDENT)
-                <li class="mb-2">
-                    <a href="{{ route('videos.index') }}" class="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md {{ request()->routeIs('videos.index') ? 'bg-gray-700' : '' }}">
-                        <x-heroicon-o-video-camera class="w-6 h-6 mr-3" />
-                        <span>Video Library</span>
-                    </a>
-                </li>
-            {{-- Parent Menu --}}
-            @elseif($userRole === \App\Enums\Role::PARENT)
-                {{-- Parents have a very simple sidebar for now --}}
             @endif
         </ul>
     </nav>

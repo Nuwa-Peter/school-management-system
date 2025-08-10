@@ -44,6 +44,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class)
         ->except(['show'])
         ->middleware('role:root,headteacher');
+    Route::post('users/{user}/reset-password', [\App\Http\Controllers\UserController::class, 'resetPassword'])
+        ->name('users.reset-password')
+        ->middleware('role:root,headteacher');
 
     // Class Level Management
     Route::resource('class-levels', ClassLevelController::class)
@@ -161,7 +164,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Admin
-    Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:root']], function () {
+    Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'role:root,headteacher']], function () {
         Route::get('audit-log', [\App\Http\Controllers\AuditLogController::class, 'index'])->name('audit-log.index');
     });
 

@@ -24,5 +24,15 @@ class UserSeeder extends Seeder
             'gender' => 'Male', // A default gender
             'email_verified_at' => now(),
         ]);
+
+        User::create([
+            'first_name' => 'Head',
+            'last_name' => 'Teacher',
+            'email' => 'headteacher@school.app',
+            'password' => Hash::make('password'),
+            'role' => Role::HEADTEACHER,
+            'gender' => 'Female', // A default gender
+            'email_verified_at' => now(),
+        ]);
     }
 }

@@ -100,4 +100,18 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
+
+/**
+ * Reset the specified user's password to the default.
+ */
+public function resetPassword(Request $request, User $user): \Illuminate\Http\RedirectResponse
+{
+    $user->password = \Illuminate\Support\Facades\Hash::make('password');
+    $user->save();
+
+    // Optional: Notify the user their password was reset
+    // $user->notify(new \App\Notifications\PasswordResetNotification());
+
+    return redirect()->route('users.edit', $user)->with('success', 'User password has been reset to "password".');
+}
 }
